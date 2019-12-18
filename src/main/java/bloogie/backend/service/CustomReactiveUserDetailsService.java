@@ -7,7 +7,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import bloogie.backend.repository.ReactiveAccountRepository;
@@ -18,14 +17,11 @@ import org.springframework.security.core.userdetails.User;
  * @author miika
  */
 
-@Service
+@Service()
 public class CustomReactiveUserDetailsService implements ReactiveUserDetailsService {
 
     @Autowired
     ReactiveAccountRepository accountRepository;
-
-    @Autowired
-    PasswordEncoder encoder;
 
     @Override
     public Mono<UserDetails> findByUsername(String username) throws UsernameNotFoundException {

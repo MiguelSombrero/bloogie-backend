@@ -1,14 +1,14 @@
 package bloogie.backend;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.web.reactive.config.EnableWebFlux;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  *
  * @author miika
  */
 
-@EnableWebFlux
+@SpringBootApplication
 public class BloogieBackend {
 
     public static void main(String[] args) throws Throwable {

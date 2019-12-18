@@ -2,34 +2,24 @@
 package bloogie.backend.domain;
 
 import java.time.LocalDateTime;
-import javax.persistence.Entity;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.jpa.domain.AbstractPersistable;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  *
  * @author miika
  */
 
-@Data @Entity @NoArgsConstructor @AllArgsConstructor
-public class Blog extends AbstractPersistable<Long> {
-
+@Data @Document @NoArgsConstructor @AllArgsConstructor
+public class Blog {
+    @Id
+    private String id;
     private LocalDateTime created;
-    
-    @NotNull
-    @Size(min = 1, max = 50)
     private String title;
-    
-    @NotNull
-    @Size(min = 1, max = 5000)
     private String content;
-
-    @ManyToOne
-    private Account author;
+    private String author_id;
 }
 
