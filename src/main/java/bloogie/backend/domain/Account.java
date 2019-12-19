@@ -13,10 +13,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * @author miika
  */
 
-@Data @Document @AllArgsConstructor @NoArgsConstructor
+@Data @AllArgsConstructor @NoArgsConstructor
+@Document(collection = "accounts")
 public class Account {
-    @Id
-    private String id;
     private String name;
     private String username;
     private String password;

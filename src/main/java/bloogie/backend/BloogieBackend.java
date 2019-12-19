@@ -13,5 +13,6 @@ public class BloogieBackend {
 
     public static void main(String[] args) throws Throwable {
         SpringApplication.run(BloogieBackend.class);
+        
     }
 }

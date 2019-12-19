@@ -30,13 +30,16 @@ public class WebConfig implements WebFluxConfigurer {
     public RouterFunction<ServerResponse> accountRouter(AccountHandler handler) {
         return route().path("/accounts", builder -> builder
                 .GET("/{id}", accept(APPLICATION_JSON), handler::getAccount)
-                .GET("", accept(APPLICATION_JSON), handler::listAccounts)
-                .POST("", handler::createAccount))
+                .GET("/", accept(APPLICATION_JSON), handler::listAccounts)
+                .POST("/", handler::createAccount))
                 .build();
     }
     
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        
+        registry.addMapping("/**")
+            .allowedOrigins("http://localhost")
+            .allowedMethods("PUT", "DELETE");
+
     }
 }

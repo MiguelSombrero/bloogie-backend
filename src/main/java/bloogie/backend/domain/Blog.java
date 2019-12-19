@@ -13,13 +13,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * @author miika
  */
 
-@Data @Document @NoArgsConstructor @AllArgsConstructor
+@Data @NoArgsConstructor @AllArgsConstructor
+@Document(collection = "posts")
 public class Blog {
-    @Id
-    private String id;
     private LocalDateTime created;
     private String title;
     private String content;
-    private String author_id;
+    private Account author;
 }
 
