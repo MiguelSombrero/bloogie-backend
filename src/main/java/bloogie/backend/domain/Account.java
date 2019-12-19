@@ -16,14 +16,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data @AllArgsConstructor @NoArgsConstructor
 @Document(collection = "accounts")
 public class Account {
+    @Id
+    private String id;
     private String name;
     private String username;
     private String password;
-    private String email;
-    private List<String> authorities;
     
-    public void addAuthority(String authority) {
-        this.authorities.add(authority);
-    }
 }
 

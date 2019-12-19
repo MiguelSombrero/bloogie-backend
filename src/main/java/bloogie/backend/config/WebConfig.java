@@ -2,6 +2,7 @@
 package bloogie.backend.config;
 
 import bloogie.backend.handler.AccountHandler;
+import bloogie.backend.handler.BlogHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,14 +25,25 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 public class WebConfig implements WebFluxConfigurer {
     
     @Autowired
-    private AccountHandler handler;
+    private AccountHandler accountHandler;
+    
+    @Autowired
+    private BlogHandler blogHandler;
     
     @Bean
-    public RouterFunction<ServerResponse> accountRouter(AccountHandler handler) {
-        return route().path("/accounts", builder -> builder
-                .GET("/{id}", accept(APPLICATION_JSON), handler::getAccount)
-                .GET("/", accept(APPLICATION_JSON), handler::listAccounts)
-                .POST("/", handler::createAccount))
+    public RouterFunction<ServerResponse> accountRouter() {
+        return route().path("/account", builder -> builder
+                .GET("/{id}", accept(APPLICATION_JSON), accountHandler::getAccount)
+                .GET("", accept(APPLICATION_JSON), accountHandler::listAccounts)
+                .POST("", accountHandler::createAccount))
+                .build();
+    }
+    
+    @Bean
+    public RouterFunction<ServerResponse> blogRouter() {
+        return route().path("/blog", builder -> builder
+                .GET("", accept(APPLICATION_JSON), blogHandler::listBlogs)
+                .POST("", blogHandler::createBlog))
                 .build();
     }
     

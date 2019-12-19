@@ -16,6 +16,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data @NoArgsConstructor @AllArgsConstructor
 @Document(collection = "posts")
 public class Blog {
+    @Id
+    private String id;
     private LocalDateTime created;
     private String title;
     private String content;

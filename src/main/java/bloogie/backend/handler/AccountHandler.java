@@ -2,7 +2,7 @@
 package bloogie.backend.handler;
 
 import bloogie.backend.domain.Account;
-import bloogie.backend.repository.ReactiveAccountRepository;
+import bloogie.backend.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import org.springframework.stereotype.Component;
@@ -21,20 +21,20 @@ import reactor.core.publisher.Mono;
 public class AccountHandler {
     
     @Autowired
-    private ReactiveAccountRepository accountRepository;
+    private AccountService accountService;
     
     public Mono<ServerResponse> listAccounts(ServerRequest request) {
-        Flux<Account> accounts = accountRepository.findAll();
+        Flux<Account> accounts = accountService.findAll();
         return ok().contentType(APPLICATION_JSON).body(accounts, Account.class);
     }
     
     public Mono<ServerResponse> createAccount(ServerRequest request) {
         Mono<Account> account = request.bodyToMono(Account.class);
-        return ok().build(accountRepository.save(account));
+        return accountService.save(account).flatMap(a -> ok().build());
     }
     
     public Mono<ServerResponse> getAccount(ServerRequest request) {
-        return accountRepository.findById(request.pathVariable("id"))
+        return accountService.findById(request.pathVariable("id"))
                 .flatMap(account -> ok().contentType(APPLICATION_JSON).bodyValue(account))
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
