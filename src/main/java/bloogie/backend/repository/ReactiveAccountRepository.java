@@ -12,5 +12,4 @@ import reactor.core.publisher.Mono;
 
 public interface ReactiveAccountRepository extends ReactiveMongoRepository<Account, String> {
     Mono<Account> findByUsername(String username);
-    Mono<Void> save(Mono<Account> account);
 }

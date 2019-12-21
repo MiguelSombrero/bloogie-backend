@@ -14,7 +14,6 @@ import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRep
  */
 
 @Configuration
-@EnableReactiveMongoRepositories
 public class DevelopmentMongoTemplateConfiguration {
   
     @Autowired

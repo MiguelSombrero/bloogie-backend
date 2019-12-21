@@ -12,5 +12,6 @@ import reactor.core.publisher.Mono;
  * @author miika
  */
 public interface ReactiveBlogRepository extends ReactiveMongoRepository<Blog, String> {
-    Flux<Blog> findByAuthor(Mono<Account> author);
+    //Flux<Blog> findByAuthor(Mono<Account> author);
+    //Mono<Void> save(Mono<Blog> blog);
 }

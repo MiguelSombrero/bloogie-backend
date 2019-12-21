@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-@EnableWebFluxSecurity
+@EnableWebFluxSecurity()
 public class DevelopmentSecurityConfiguration {
     
     @Autowired
@@ -28,23 +28,26 @@ public class DevelopmentSecurityConfiguration {
     
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        http
+        return http
             .csrf().disable()
-            .authorizeExchange().anyExchange().permitAll().and()
+            .authorizeExchange()
+                .pathMatchers("/account").permitAll()
+                .anyExchange().authenticated()
+                .and()
             .httpBasic(withDefaults())
-            .formLogin(withDefaults());
-        return http.build();
+            .formLogin(withDefaults())
+            .build();
     }
     
-    @Bean
-    public MapReactiveUserDetailsService userDetailsService() {
-        UserDetails user = User
-                .withUsername("admin")
-                .password(encoder.encode("admin"))
-                .roles("ADMIN")
-                .build();
-        return new MapReactiveUserDetailsService(user);
-    }
+//    @Bean
+//    public MapReactiveUserDetailsService userDetailsService() {
+//        UserDetails user = User
+//                .withUsername("admin")
+//                .password(encoder.encode("admin"))
+//                .roles("ADMIN")
+//                .build();
+//        return new MapReactiveUserDetailsService(user);
+//    }
     
     @Bean
     public PasswordEncoder passwordEncoder() {

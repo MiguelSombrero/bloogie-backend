@@ -1,12 +1,17 @@
 
 package bloogie.backend.domain;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  *
@@ -21,6 +26,15 @@ public class Account {
     private String name;
     private String username;
     private String password;
+    private List<String> authorities = new ArrayList<>();
     
+    public void setAuthority(String authority) {
+        this.authorities.add(authority);
+    }
+    
+    public UserDetails toUserDetails() {
+        return new User(this.username, this.password, true, true, true, true,
+            this.authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+    }
 }
 
