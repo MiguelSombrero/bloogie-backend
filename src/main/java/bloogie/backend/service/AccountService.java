@@ -2,8 +2,12 @@
 package bloogie.backend.service;
 
 import bloogie.backend.domain.Account;
+import bloogie.backend.repository.ReactiveAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -20,6 +24,9 @@ public class AccountService {
     @Autowired
     private ReactiveMongoTemplate template;
  
+    @Autowired
+    private ReactiveAccountRepository accountRepository;
+    
     @Autowired
     private PasswordEncoder encoder;
     
@@ -38,5 +45,13 @@ public class AccountService {
     
     public Mono<Account> findById(String id) {
         return template.findById(id, Account.class);
+    }
+    
+    public Mono<Account> getPrincipal() {
+        return ReactiveSecurityContextHolder.getContext()
+                .switchIfEmpty(Mono.error(new IllegalStateException("ReactiveSecurityContext is empty")))
+                .map(SecurityContext::getAuthentication)
+                .map(Authentication::getName)
+                .flatMap(accountRepository::findByUsername);
     }
 }

@@ -7,7 +7,13 @@ import bloogie.backend.repository.ReactiveAccountRepository;
 import bloogie.backend.service.BlogService;
 import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -29,19 +35,17 @@ public class BlogHandler {
     @Autowired
     private ReactiveAccountRepository accountRepository;
     
+    @Autowired
+    private ReactiveMongoTemplate template;
+    
     public Mono<ServerResponse> listBlogs(ServerRequest request) {
         Flux<Blog> blogs = blogService.findAll();
         return ok().contentType(APPLICATION_JSON).body(blogs, Blog.class);
     }
     
     public Mono<ServerResponse> createBlog(ServerRequest request) {
-        Mono<Account> account = request
-                .principal()
-                .map(Principal::getName)
-                .flatMap(accountRepository::findByUsername);
-        
         Mono<Blog> blog = request.bodyToMono(Blog.class);
-        return blogService.save(blog, account).flatMap(b -> ok().build());
+        return blogService.save(blog).flatMap(b -> ok().build());
     }
 }
 

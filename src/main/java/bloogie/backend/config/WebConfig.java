@@ -33,7 +33,7 @@ public class WebConfig implements WebFluxConfigurer {
     
     @Bean
     public RouterFunction<ServerResponse> accountRouter() {
-        return route().path("/account", builder -> builder
+        return route().path("/accounts", builder -> builder
                 .GET("/{id}", accept(APPLICATION_JSON), accountHandler::getAccount)
                 .GET("", accept(APPLICATION_JSON), accountHandler::listAccounts)
                 .POST("", accountHandler::createAccount))
@@ -42,7 +42,7 @@ public class WebConfig implements WebFluxConfigurer {
     
     @Bean
     public RouterFunction<ServerResponse> blogRouter() {
-        return route().path("/blog", builder -> builder
+        return route().path("/blogs", builder -> builder
                 .GET("", accept(APPLICATION_JSON), blogHandler::listBlogs)
                 .POST("", blogHandler::createBlog))
                 .filter(new AuthorizationFilter())
