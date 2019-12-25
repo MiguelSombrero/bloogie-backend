@@ -54,15 +54,6 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
-        
-        <!-- JUnit 5 for testing-->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.1.0</version>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
     
     

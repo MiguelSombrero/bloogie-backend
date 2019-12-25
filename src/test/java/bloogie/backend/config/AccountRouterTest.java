@@ -3,19 +3,32 @@ package bloogie.backend.config;
 
 import bloogie.backend.domain.Account;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.springSecurity;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -24,20 +37,23 @@ import reactor.core.publisher.Mono;
  * @author miika
  */
 
-@ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AccountRouterTest {
     
-    @Autowired
     private WebTestClient client;
 
     @Autowired
     private ReactiveMongoTemplate template;
     
-    @BeforeEach
-    public void setUp(ApplicationContext context) {  
-        client = WebTestClient.bindToApplicationContext(context).build();
+    @Autowired
+    private ApplicationContext context;
+
+    @Before
+    public void setUp() {
+        client = WebTestClient
+                .bindToApplicationContext(context)
+                .build();
     }
     
     @Test

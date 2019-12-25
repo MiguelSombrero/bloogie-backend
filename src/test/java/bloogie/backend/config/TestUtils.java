@@ -7,6 +7,7 @@ import bloogie.backend.repository.ReactiveAccountRepository;
 import bloogie.backend.repository.ReactiveBlogRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -74,7 +75,7 @@ public class TestUtils {
         Blog post = new Blog();
         post.setTitle(title);
         post.setContent(content);
-        post.setCreated(LocalDateTime.now());
+        post.setCreated(new Date());
         blogRepository.save(post);
     }
 }

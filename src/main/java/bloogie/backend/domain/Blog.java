@@ -1,7 +1,7 @@
 
 package bloogie.backend.domain;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +18,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Blog {
     @Id
     private String id;
-    private LocalDateTime created;
+    private Date created;
     private String title;
     private String content;
     private Account author;

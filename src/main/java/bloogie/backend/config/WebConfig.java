@@ -3,7 +3,6 @@ package bloogie.backend.config;
 
 import bloogie.backend.handler.AccountHandler;
 import bloogie.backend.handler.BlogHandler;
-import bloogie.backend.filter.AuthorizationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,7 +44,6 @@ public class WebConfig implements WebFluxConfigurer {
         return route().path("/blogs", builder -> builder
                 .GET("", accept(APPLICATION_JSON), blogHandler::listBlogs)
                 .POST("", blogHandler::createBlog))
-                .filter(new AuthorizationFilter())
                 .build();
     }
     
