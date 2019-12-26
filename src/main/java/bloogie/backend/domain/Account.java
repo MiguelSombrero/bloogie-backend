@@ -27,7 +27,7 @@ public class Account {
     private String id;
     private String name;
     private String username;
-    @JsonProperty(access = Access.WRITE_ONLY)
+    //@JsonProperty(access = Access.WRITE_ONLY)
     private String password;
     @JsonProperty(access = Access.WRITE_ONLY)
     private List<String> authorities = new ArrayList<>();

@@ -4,6 +4,7 @@ package bloogie.backend.config;
 import bloogie.backend.domain.Blog;
 import bloogie.backend.domain.Account;
 import java.util.List;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
@@ -25,21 +26,21 @@ import reactor.core.publisher.Mono;
  * @author miika
  */
 
-@ActiveProfiles("test")
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 public class BlogRouterTest {
     
-    @Autowired
     private WebTestClient client;
+
+    @Autowired
+    private ApplicationContext context;
 
     @Autowired
     private ReactiveMongoTemplate template;
     
-    @BeforeEach
-    public void setUp(ApplicationContext context) {  
-        client = WebTestClient
-                .bindToApplicationContext(context)
+    @Before
+    public void setUp() {  
+        client = WebTestClient.bindToApplicationContext(context)
                 .apply(springSecurity())
                 .build();
         

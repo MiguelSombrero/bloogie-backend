@@ -2,7 +2,6 @@
 package bloogie.backend.handler;
 
 import bloogie.backend.domain.Blog;
-import bloogie.backend.repository.ReactiveAccountRepository;
 import bloogie.backend.service.BlogService;
 import bloogie.backend.validator.BlogValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +30,6 @@ public class BlogHandler {
     
     @Autowired
     private BlogService blogService;
-    
-    @Autowired
-    private ReactiveAccountRepository accountRepository;
-    
-    @Autowired
-    private ReactiveMongoTemplate template;
     
     public Mono<ServerResponse> listBlogs(ServerRequest request) {
         Flux<Blog> blogs = blogService.findAll();

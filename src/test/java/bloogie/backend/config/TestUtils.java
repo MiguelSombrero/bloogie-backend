@@ -3,8 +3,6 @@ package bloogie.backend.config;
 
 import bloogie.backend.domain.Account;
 import bloogie.backend.domain.Blog;
-import bloogie.backend.repository.ReactiveAccountRepository;
-import bloogie.backend.repository.ReactiveBlogRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -22,15 +20,11 @@ import reactor.core.publisher.Mono;
  * @author miika
  */
 
-@ActiveProfiles("test")
 @Component
 public class TestUtils {
     
     @Autowired
-    private ReactiveAccountRepository accountRepository;
-    
-    @Autowired
-    private ReactiveBlogRepository blogRepository;
+    private ReactiveMongoTemplate template;
     
     public String createStringOfLength(int length) {
         StringBuilder string = new StringBuilder();
@@ -42,25 +36,12 @@ public class TestUtils {
         return string.toString();
     }
     
-    public void clearDatabase() {
-        accountRepository.deleteAll();
-        blogRepository.deleteAll();
-    }
-    
-    public Flux<Account> getUsers() {
-        return accountRepository.findAll();
-    }
-    
-    public Flux<Blog> getBlogs() {
-        return blogRepository.findAll();
-    }
-    
     public Mono<Account> saveUser(String name, String username, String password) {
         Account account = new Account();
         account.setUsername(username);
         account.setPassword(password);
         account.setName(name);
-        return accountRepository.save(account);
+        return template.save(account);
     }
     
     public Mono<Account> giveUser(String name, String username, String password) {
@@ -76,6 +57,6 @@ public class TestUtils {
         post.setTitle(title);
         post.setContent(content);
         post.setCreated(new Date());
-        blogRepository.save(post);
+        template.save(post);
     }
 }
