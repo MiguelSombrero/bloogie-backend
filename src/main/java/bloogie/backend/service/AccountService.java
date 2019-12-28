@@ -45,7 +45,7 @@ public class AccountService {
         return template.findById(id, Account.class);
     }
     
-    public Mono<Account> getPrincipal() {
+    public Mono<Account> getAuthenticatedUser() {
         return ReactiveSecurityContextHolder.getContext()
                 .switchIfEmpty(Mono.error(new IllegalStateException("ReactiveSecurityContext is empty")))
                 .map(SecurityContext::getAuthentication)

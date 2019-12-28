@@ -29,7 +29,7 @@ public class BlogService {
     }
     
     public Mono<Blog> save(Mono<Blog> blog) {
-        Mono<Account> account = accountService.getPrincipal();
+        Mono<Account> account = accountService.getAuthenticatedUser();
         
         Mono<Blog> mergedBlog = account.zipWith(blog, (a, b) -> {
             b.setCreated(new Date());

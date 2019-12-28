@@ -3,9 +3,11 @@ package bloogie.backend.config;
 
 import bloogie.backend.handler.AccountHandler;
 import bloogie.backend.handler.BlogHandler;
+import bloogie.backend.handler.LoginHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import org.springframework.web.reactive.config.CorsRegistry;
 import org.springframework.web.reactive.config.EnableWebFlux;
@@ -14,6 +16,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 import org.springframework.web.reactive.function.server.RouterFunction;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Mono;
 
 /**
  *
@@ -25,10 +28,18 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 public class WebConfig implements WebFluxConfigurer {
     
     @Autowired
+    private LoginHandler loginHandler;
+    
+    @Autowired
     private AccountHandler accountHandler;
     
     @Autowired
     private BlogHandler blogHandler;
+    
+    @Bean
+    public RouterFunction<ServerResponse> loginRouter() {
+        return route().POST("/login", loginHandler::login).build();
+    }
     
     @Bean
     public RouterFunction<ServerResponse> accountRouter() {
@@ -50,8 +61,8 @@ public class WebConfig implements WebFluxConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://localhost")
-            .allowedMethods("PUT", "DELETE");
-
+            .allowedOrigins("*")
+            .allowedMethods("*")
+            .allowedHeaders("*");
     }
 }

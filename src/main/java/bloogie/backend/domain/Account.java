@@ -1,6 +1,7 @@
 
 package bloogie.backend.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.util.ArrayList;
@@ -27,9 +28,11 @@ public class Account {
     private String id;
     private String name;
     private String username;
-    //@JsonProperty(access = Access.WRITE_ONLY)
-    private String password;
+    
     @JsonProperty(access = Access.WRITE_ONLY)
+    private String password;
+    
+    @JsonProperty
     private List<String> authorities = new ArrayList<>();
     
     public void setAuthority(String authority) {

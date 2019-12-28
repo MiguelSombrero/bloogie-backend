@@ -1,6 +1,7 @@
 
 package bloogie.backend.config;
 
+import bloogie.backend.BloogieBackend;
 import bloogie.backend.domain.Account;
 import java.util.List;
 import org.junit.Before;
@@ -16,6 +17,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -41,7 +43,11 @@ public class AccountRouterTest {
 
     @Before
     public void setUp() {
-        client = WebTestClient.bindToApplicationContext(context).build();
+        client = WebTestClient
+                .bindToApplicationContext(context)
+                .configureClient()
+                .build();
+        
         template.dropCollection(Account.class);
     }
     
