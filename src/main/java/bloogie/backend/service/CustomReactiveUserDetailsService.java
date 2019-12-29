@@ -29,7 +29,7 @@ public class CustomReactiveUserDetailsService implements ReactiveUserDetailsServ
                 .switchIfEmpty(Mono.defer(() -> {
                     return Mono.error(new UsernameNotFoundException("User Not Found"));
                     
-        })).map(Account::toUserDetails);
+                })).map(Account::toUserDetails);
     }
     
 }

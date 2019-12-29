@@ -22,11 +22,11 @@ import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRep
 @EnableReactiveMongoRepositories
 public class DevelopmentMongoConfiguration extends AbstractReactiveMongoConfiguration {
  
-    //@Value("${spring.data.mongodb.database}")
-    private static String MONGO_DB = "bloogietestdb";
+    @Value("${spring.data.mongodb.database}")
+    private String MONGO_DB;
     
     @Autowired
-    MongoClient reactiveMongoClient;
+    private MongoClient reactiveMongoClient;
     
     @Bean
     @Override

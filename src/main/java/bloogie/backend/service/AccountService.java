@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -47,9 +48,13 @@ public class AccountService {
     
     public Mono<Account> getAuthenticatedUser() {
         return ReactiveSecurityContextHolder.getContext()
-                .switchIfEmpty(Mono.error(new IllegalStateException("ReactiveSecurityContext is empty")))
                 .map(SecurityContext::getAuthentication)
                 .map(Authentication::getName)
-                .flatMap(username -> template.findOne(new Query(Criteria.where("username").is(username)), Account.class));
+                .flatMap(username -> {
+                    return template.findOne(new Query(Criteria.where("username").is(username)), Account.class);
+                });
+//                .switchIfEmpty(Mono.defer(() -> {
+//                    return Mono.error(new UsernameNotFoundException("User Not Found"));
+//                }));
     }
 }

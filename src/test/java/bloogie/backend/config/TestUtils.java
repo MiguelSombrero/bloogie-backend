@@ -5,6 +5,7 @@ import bloogie.backend.domain.Account;
 import bloogie.backend.domain.Blog;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,11 @@ public class TestUtils {
         }
         
         return string.toString();
+    }
+    
+    public String createAuthenticationToken(String username, String password) {
+        String passphrase = username + ":" + password;
+        return Base64.getEncoder().encodeToString(passphrase.getBytes());
     }
     
     public Mono<Account> saveUser(String name, String username, String password) {

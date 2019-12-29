@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -27,12 +28,14 @@ public class Account {
     @Id
     private String id;
     private String name;
+    
+    //@Indexed(unique = true)
     private String username;
     
-    @JsonProperty(access = Access.WRITE_ONLY)
+    //@JsonProperty(access = Access.WRITE_ONLY)
     private String password;
     
-    @JsonProperty
+    @JsonProperty(access = Access.WRITE_ONLY)
     private List<String> authorities = new ArrayList<>();
     
     public void setAuthority(String authority) {
