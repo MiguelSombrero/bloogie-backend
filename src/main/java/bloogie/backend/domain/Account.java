@@ -1,7 +1,6 @@
 
 package bloogie.backend.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.util.ArrayList;
@@ -18,7 +17,10 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
- *
+ * Class for Account object i.e. user registered in this application.
+ * Password and authorities are persisted but never serialized to JSON,
+ * avoiding them to end up to client.
+ * 
  * @author miika
  */
 
@@ -29,7 +31,7 @@ public class Account {
     private String id;
     private String name;
     
-    //@Indexed(unique = true)
+    @Indexed(unique = true)
     private String username;
     
     @JsonProperty(access = Access.WRITE_ONLY)

@@ -9,7 +9,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
- *
+ * Class for Blog object. Blog is a story with a title and content, which
+ * users can write in the blog service.
+ * 
  * @author miika
  */
 

@@ -8,7 +8,9 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- *
+ * Class for validating Account objects. Note that these validation
+ * constraints ARE NOT sufficient for production environment.
+ * 
  * @author miika
  */
 
@@ -20,6 +22,13 @@ public class AccountValidator implements Validator {
         return Account.class.equals(clazz);
     }
 
+    /**
+     * Validates given Account. All name, username and password must be at least
+     * 5 characters and at most 20 characters long. Also white space is no allowed.
+     * 
+     * @param o Object to validate
+     * @param errors Validation errors
+     */
     @Override
     public void validate(Object o, Errors errors) {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "field.required");

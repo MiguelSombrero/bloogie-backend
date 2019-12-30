@@ -17,7 +17,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- *
+ * Handler class for Blog resource. When a user makes an API call to
+ * base path /blog, server request is processed in this class.
+ * 
  * @author miika
  */
 
@@ -30,16 +32,39 @@ public class BlogHandler {
     @Autowired
     private BlogService blogService;
     
+    /**
+     * Handler for fetching all blogs and returning
+     * them in the body of server response. This handler is activated
+     * with GET request to path /blogs.
+     * 
+     * @param request Request received from the client
+     * @return Status 200 response with all blogs in body
+     */
     public Mono<ServerResponse> listBlogs(ServerRequest request) {
         Flux<Blog> blogs = blogService.findAll();
         return ok().contentType(APPLICATION_JSON).body(blogs, Blog.class);
     }
     
+    /**
+     * Handler for creating a blog and returning
+     * it in the body of server response. Handler also validates
+     * the Blog object received from the request. This handler
+     * is activated with POST request to path /blog.
+     * 
+     * @param request Request received from the client
+     * @return Status 200 response with created blog in the body
+     */
     public Mono<ServerResponse> createBlog(ServerRequest request) {
         Mono<Blog> blog = request.bodyToMono(Blog.class).doOnNext(this::validate);
         return blogService.save(blog).flatMap(b -> ok().contentType(APPLICATION_JSON).bodyValue(b));
     }
     
+    /**
+     * Validates an Blog received from the server request. If there
+     * is a validation errors, throws new ServerWebInputException.
+     * 
+     * @param blog Blog to validate
+     */
     private void validate(Blog blog) {
         Errors errors = new BeanPropertyBindingResult(blog, "blog");
         validator.validate(blog, errors);

@@ -14,7 +14,12 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 /**
- *
+ * Class for configuring security settings for the application.
+ * 
+ * Notice that configurations in this class is for development environment.
+ * Production environment should usually have its own security configurations
+ * with stricter rules.
+ * 
  * @author miika
  */
 

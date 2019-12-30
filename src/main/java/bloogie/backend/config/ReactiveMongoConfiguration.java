@@ -13,14 +13,17 @@ import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
 
 /**
- *
+ * Class for configuring reactive mongo client and reactive mongo template. Database name
+ * is fetched from application-{profile}.properties file, with {profile} matching one in @Profile
+ * annotation.
+ * 
  * @author miika
  */
 
 @Profile("default")
 @Configuration
 @EnableReactiveMongoRepositories
-public class DevelopmentMongoConfiguration extends AbstractReactiveMongoConfiguration {
+public class ReactiveMongoConfiguration extends AbstractReactiveMongoConfiguration {
  
     @Value("${spring.data.mongodb.database}")
     private String MONGO_DB;

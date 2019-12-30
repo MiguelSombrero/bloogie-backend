@@ -11,7 +11,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
- *
+ * Service class for providing Blog related methods such as 
+ * fetching all blogs or creating a blog. This class uses mongo database
+ * through reactive mongo template.
+ * 
  * @author miika
  */
 
@@ -24,20 +27,33 @@ public class BlogService {
     @Autowired
     private AccountService accountService;
     
+    /**
+     * Fetch all Blogs from the database.
+     * 
+     * @return All blogs
+     */
     public Flux<Blog> findAll() {
         return template.findAll(Blog.class);
     }
     
+    /**
+     * Save Blog to database. Before saving, method sets
+     * creation time and author for the blog. Author is
+     * fetched from the database according to username
+     * found in security context
+     * 
+     * @param blog Blog to save
+     * @return Saved blog
+     */
     public Mono<Blog> save(Mono<Blog> blog) {
         Mono<Account> account = accountService.getAuthenticatedUser();
         
-        Mono<Blog> mergedBlog = account.zipWith(blog, (a, b) -> {
+        return account.zipWith(blog, (a, b) -> {
             b.setCreated(new Date());
             b.setAuthor(a);
             return b;
-        });
-        
-        return template.save(mergedBlog);
+            
+        }).flatMap(template::save);
     }
     
 }

@@ -11,7 +11,9 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
 import reactor.core.publisher.Mono;
 
 /**
- *
+ * Handler class for login. When a user makes an API call to
+ * base path /login, server request is processed in this class.
+ * 
  * @author miika
  */
 
@@ -21,6 +23,13 @@ public class LoginHandler {
     @Autowired
     private AccountService accountService;
     
+    /**
+     * Handler for fetching authenticated user from database
+     * and returning it in the body of the server response.
+     * 
+     * @param request Request received from the client
+     * @return Status 200 response with authenticated user in the body 
+     */
     public Mono<ServerResponse> login(ServerRequest request) {
         return accountService.getAuthenticatedUser()
                 .flatMap(user -> ok().contentType(APPLICATION_JSON).bodyValue(user));

@@ -13,7 +13,8 @@ import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
 /**
- *
+ * Service for returning customized user details.
+ * 
  * @author miika
  */
 
@@ -23,11 +24,18 @@ public class CustomReactiveUserDetailsService implements ReactiveUserDetailsServ
     @Autowired
     private ReactiveMongoTemplate template;
     
+    /**
+     * Fetches customized user details. Basically fetches
+     * and returns user with given username from database
+     * 
+     * @param username Username to search for
+     * @return UserDetails matching given username
+     */
     @Override
     public Mono<UserDetails> findByUsername(String username) {
         return template.findOne(new Query(Criteria.where("username").is(username)), Account.class)
                 .switchIfEmpty(Mono.defer(() -> {
-                    return Mono.error(new UsernameNotFoundException("User Not Found"));
+                    return Mono.error(new UsernameNotFoundException("Username not found"));
                     
                 })).map(Account::toUserDetails);
     }
