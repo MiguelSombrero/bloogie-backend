@@ -5,7 +5,6 @@ import bloogie.backend.domain.Blog;
 import bloogie.backend.service.BlogService;
 import bloogie.backend.validator.BlogValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -38,7 +37,7 @@ public class BlogHandler {
     
     public Mono<ServerResponse> createBlog(ServerRequest request) {
         Mono<Blog> blog = request.bodyToMono(Blog.class).doOnNext(this::validate);
-        return blogService.save(blog).flatMap(b -> ok().build());
+        return blogService.save(blog).flatMap(b -> ok().contentType(APPLICATION_JSON).bodyValue(b));
     }
     
     private void validate(Blog blog) {

@@ -1,0 +1,81 @@
+
+package bloogie.backend.router;
+
+import bloogie.backend.domain.Account;
+import bloogie.backend.service.AccountService;
+import bloogie.backend.utils.TestUtils;
+import org.junit.jupiter.api.Test;
+import static org.junit.Assert.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationContext;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Mono;
+
+/**
+ *
+ * @author miika
+ */
+
+@AutoConfigureWebTestClient
+@SpringBootTest
+public class LoginRouterTest {
+    
+    @Autowired
+    private WebTestClient client;
+
+    @Autowired
+    private TestUtils utils;
+    
+    @Autowired
+    private PasswordEncoder encoder;
+    
+    @MockBean
+    private AccountService accountService;
+    
+    private Account account;
+    
+    @BeforeEach
+    public void setUp() {
+        this.account = utils.giveUser("oidasajfdlihfaidh", "Jukka Riekkonen", "jukka", "jukka");
+    }
+    
+    // not yet working - how to mock?
+    
+    @Test
+    public void loginFailsWithBadCredentials() {
+        Mockito.when(accountService.getAuthenticatedUser()).thenReturn(Mono.just(account));
+        
+        client
+                .post().uri("/login")
+                .header("Authorization", "Basic " + utils.createAuthenticationToken("justiina", "juuso"))
+                .exchange()
+                .expectStatus().isUnauthorized()
+                .expectBody().isEmpty();
+    }
+    
+    @Test
+    public void loginSuccessWithGoodCredentials() {
+        Mockito.when(accountService.getAuthenticatedUser()).thenReturn(Mono.just(account));
+        
+        client
+                .post().uri("/login")
+                .header("Authorization", "Basic " + utils.createAuthenticationToken("jukka", "jukka"))
+                .exchange()
+                .expectStatus()
+                    .isOk()
+                .expectHeader()
+                    .contentType(APPLICATION_JSON)
+                .expectBody()
+                    .jsonPath("$.id").isEqualTo("oidasajfdlihfaidh")
+                    .jsonPath("$.name").isEqualTo("Jukka Riekkonen")
+                    .jsonPath("$.username").isEqualTo("jukka")
+                    .jsonPath("$.password").doesNotExist();
+    }
+}

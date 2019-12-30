@@ -32,7 +32,7 @@ public class Account {
     //@Indexed(unique = true)
     private String username;
     
-    //@JsonProperty(access = Access.WRITE_ONLY)
+    @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
     
     @JsonProperty(access = Access.WRITE_ONLY)

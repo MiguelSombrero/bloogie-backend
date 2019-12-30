@@ -25,7 +25,7 @@ import reactor.core.publisher.Mono;
 
 @Configuration
 @EnableWebFlux
-public class WebConfig implements WebFluxConfigurer {
+public class DevelopmentWebConfiguration implements WebFluxConfigurer {
     
     @Autowired
     private LoginHandler loginHandler;
