@@ -46,9 +46,7 @@ public class BlogService {
      * @return Saved blog
      */
     public Mono<Blog> save(Mono<Blog> blog) {
-        Mono<Account> account = accountService.getAuthenticatedUser();
-        
-        return account.zipWith(blog, (a, b) -> {
+        return accountService.getAuthenticatedUser().zipWith(blog, (a, b) -> {
             b.setCreated(new Date());
             b.setAuthor(a);
             return b;

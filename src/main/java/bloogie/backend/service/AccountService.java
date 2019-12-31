@@ -3,9 +3,11 @@ package bloogie.backend.service;
 
 import bloogie.backend.domain.Account;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
@@ -53,6 +55,23 @@ public class AccountService {
             a.setAuthority("USER");
             return a;
                 
+        }).flatMap(template::save);
+    }
+    
+    /**
+     * Update existing Account. At the moment, only name and password
+     * can be updated
+     * 
+     * @param newAccount Account with updated info
+     * @param id Id of Account to update
+     * @return Updated account
+     */
+    public Mono<Account> update(Mono<Account> newAccount, String id) {
+        return template.findById(id, Account.class).zipWith(newAccount, (o, n) -> {
+            o.setPassword((n.getPassword() == null) ? o.getPassword() : encoder.encode(n.getPassword()));
+            o.setName((n.getName() == null) ? o.getName() : n.getName());
+            return o;
+            
         }).flatMap(template::save);
     }
     

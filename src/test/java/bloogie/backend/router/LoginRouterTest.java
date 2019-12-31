@@ -46,8 +46,6 @@ public class LoginRouterTest {
         this.account = utils.giveUser("oidasajfdlihfaidh", "Jukka Riekkonen", "jukka", "jukka");
     }
     
-    // not yet working - how to mock?
-    
     @Test
     public void loginFailsWithBadCredentials() {
         Mockito.when(accountService.getAuthenticatedUser()).thenReturn(Mono.just(account));
@@ -59,6 +57,8 @@ public class LoginRouterTest {
                 .expectStatus().isUnauthorized()
                 .expectBody().isEmpty();
     }
+    
+    // not yet working if database doesn't include "jukka" - how to mock?
     
     @Test
     public void loginSuccessWithGoodCredentials() {

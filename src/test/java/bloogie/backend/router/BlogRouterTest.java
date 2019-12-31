@@ -3,6 +3,7 @@ package bloogie.backend.router;
 
 import bloogie.backend.domain.Account;
 import bloogie.backend.domain.Blog;
+import bloogie.backend.service.AccountService;
 import bloogie.backend.service.BlogService;
 import bloogie.backend.utils.TestUtils;
 import org.junit.Before;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -37,7 +39,7 @@ public class BlogRouterTest {
     
     @MockBean
     private BlogService blogService;
-
+    
     private Account account;
     private Blog blog1;
     private Blog blog2;
@@ -45,8 +47,8 @@ public class BlogRouterTest {
     @BeforeEach
     public void setUp() {
         this.account = utils.giveUser("oidasajfdlihfaidh", "Jukka Riekkonen", "jukka", "jukka");
-        this.blog1 = utils.giveBlog("sdfjhasdfasd", "New blog", "This is my new blog", account);
-        this.blog2 = utils.giveBlog("daufa9u0ouhfoauhdf", "To be or not to be", "That is the guestion", account);
+        this.blog1 = utils.giveBlog("sdfjhasdfasd", "New blog", "This is my new blog", null);
+        this.blog2 = utils.giveBlog("daufa9u0ouhfoauhdf", "To be or not to be", "That is the guestion", null);
     }
     
     @Test

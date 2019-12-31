@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -60,7 +61,8 @@ public class AccountRouterTest {
     }
     
     @Test
-    public void canGetUsersFromDatabase() {
+    @WithMockUser
+    public void canGetUsersFromDatabaseWhenAuthenticated() {
         Mockito.when(accountService.findAll()).thenReturn(Flux.just(account1, account2));
          
         client
@@ -73,6 +75,20 @@ public class AccountRouterTest {
                     .contentType(APPLICATION_JSON)
                 .expectBodyList(Account.class)
                     .hasSize(2);
+    }
+    
+    @Test
+    public void cannotGetUsersFromDatabaseWhenNotAuthenticated() {
+        Mockito.when(accountService.findAll()).thenReturn(Flux.just(account1, account2));
+         
+        client
+                .get().uri("/accounts")
+                .accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                    .isUnauthorized()
+                .expectBody()
+                    .isEmpty();
     }
     
     @Test

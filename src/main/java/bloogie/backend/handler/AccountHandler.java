@@ -74,6 +74,21 @@ public class AccountHandler {
     }
     
     /**
+     * Handler for updating existing account and returning
+     * it in the body of server response. This handler
+     * is activated with PUT request to path /account/{id}.
+     * 
+     * @param request Request received from the client
+     * @return Status 201 (created) response with updated account in the body
+     */
+    public Mono<ServerResponse> updateAccount(ServerRequest request) {
+        Mono<Account> account = request.bodyToMono(Account.class);
+        
+        return accountService.update(account, request.pathVariable("id"))
+                .flatMap(a -> ok().contentType(APPLICATION_JSON).bodyValue(a));
+    }
+    
+    /**
      * Validates an Account received from the server request. If there
      * is a validation errors, throws new ServerWebInputException.
      * 

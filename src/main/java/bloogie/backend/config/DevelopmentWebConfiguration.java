@@ -53,8 +53,8 @@ public class DevelopmentWebConfiguration implements WebFluxConfigurer {
     
     /**
      * Functional endpoint for Account resource. Base path is /account and
-     * the options are to GET one account, GET all accounts or POST a
-     * new account. 
+     * the options are to GET one account, GET all accounts, PUT updated account
+     * or POST a new account. 
      * 
      * @return Router function with response to Account request
      */
@@ -62,6 +62,7 @@ public class DevelopmentWebConfiguration implements WebFluxConfigurer {
     public RouterFunction<ServerResponse> accountRouter() {
         return route().path("/accounts", builder -> builder
                 .GET("/{id}", accept(APPLICATION_JSON), accountHandler::getAccount)
+                .PUT("/{id}", accept(APPLICATION_JSON), accountHandler::updateAccount)
                 .GET("", accept(APPLICATION_JSON), accountHandler::listAccounts)
                 .POST("", accountHandler::createAccount))
                 .build();
