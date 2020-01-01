@@ -2,6 +2,7 @@
 package bloogie.backend.validator;
 
 import bloogie.backend.domain.Account;
+import javax.validation.Valid;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -30,7 +31,7 @@ public class AccountValidator implements Validator {
      * @param errors Validation errors
      */
     @Override
-    public void validate(Object o, Errors errors) {
+    public void validate(@Valid Object o, Errors errors) {
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "field.required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "username", "field.required");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "password", "field.required");

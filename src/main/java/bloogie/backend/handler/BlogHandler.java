@@ -1,6 +1,7 @@
 
 package bloogie.backend.handler;
 
+import bloogie.backend.domain.Account;
 import bloogie.backend.domain.Blog;
 import bloogie.backend.service.BlogService;
 import bloogie.backend.validator.BlogValidator;
@@ -11,7 +12,9 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import static org.springframework.web.reactive.function.server.ServerResponse.noContent;
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
+import static org.springframework.web.reactive.function.server.ServerResponse.status;
 import org.springframework.web.server.ServerWebInputException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -57,6 +60,47 @@ public class BlogHandler {
     public Mono<ServerResponse> createBlog(ServerRequest request) {
         Mono<Blog> blog = request.bodyToMono(Blog.class).doOnNext(this::validate);
         return blogService.save(blog).flatMap(b -> ok().contentType(APPLICATION_JSON).bodyValue(b));
+    }
+    
+    /**
+     * Handler for fetching one blog and returning
+     * it in the body of server response. This handler
+     * is activated with GET request to path /blogs/{id}.
+     * 
+     * @param request Request received from the client
+     * @return Status 200 response with requested blog in the body
+     */
+    public Mono<ServerResponse> getBlog(ServerRequest request) {
+        return blogService.findOne(request.pathVariable("id"))
+                .flatMap(blog -> ok().contentType(APPLICATION_JSON).bodyValue(blog))
+                .switchIfEmpty(ServerResponse.notFound().build());
+    }
+    
+    /**
+     * Handler for updating existing blog and returning
+     * it in the body of server response. This handler
+     * is activated with PUT request to path /blogs/{id}.
+     * 
+     * @param request Request received from the client
+     * @return Status 201 (created) response with updated blog in the body
+     */
+    public Mono<ServerResponse> updateBlog(ServerRequest request) {
+        Mono<Blog> blog = request.bodyToMono(Blog.class);
+        
+        return blogService.update(blog, request.pathVariable("id"))
+                .flatMap(b -> status(201).contentType(APPLICATION_JSON).bodyValue(b));
+    }
+    
+    /**
+     * Handler for deleting blog. This handler
+     * is activated with DELETE request to path /blogs/{id}.
+     * 
+     * @param request Request received from the client
+     * @return Status 204 (no content) response
+     */
+    public Mono<ServerResponse> deleteBlog(ServerRequest request) {
+        return blogService.delete(request.pathVariable("id"))
+                .flatMap(b -> noContent().build());
     }
     
     /**

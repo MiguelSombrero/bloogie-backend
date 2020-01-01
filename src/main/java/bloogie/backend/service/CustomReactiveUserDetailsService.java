@@ -34,10 +34,8 @@ public class CustomReactiveUserDetailsService implements ReactiveUserDetailsServ
     @Override
     public Mono<UserDetails> findByUsername(String username) {
         return template.findOne(new Query(Criteria.where("username").is(username)), Account.class)
-                .switchIfEmpty(Mono.defer(() -> {
-                    return Mono.error(new UsernameNotFoundException("Username not found"));
-                    
-                })).map(Account::toUserDetails);
+                .switchIfEmpty(Mono.defer(() ->  Mono.error(new UsernameNotFoundException("Username not found"))))
+                .map(Account::toUserDetails);
     }
     
 }

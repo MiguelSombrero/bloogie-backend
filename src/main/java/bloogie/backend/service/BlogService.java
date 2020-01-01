@@ -6,6 +6,8 @@ import bloogie.backend.domain.Blog;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -62,6 +64,40 @@ public class BlogService {
         }).flatMap(template::save);
     }
     
+    /**
+     * Fetch Blog with specific id from database.
+     * 
+     * @param id Blogs id
+     * @return Found blog
+     */
+    public Mono<Blog> findOne(String id) {
+        return template.findById(id, Blog.class);
+    }
     
+    /**
+     * Update existing Blog.
+     * 
+     * @param newBlog Account with updated info
+     * @param id Id of Blog to update
+     * @return Updated Blog
+     */
+    public Mono<Blog> update(Mono<Blog> newBlog, String id) {
+        return template.findById(id, Blog.class).zipWith(newBlog, (o, n) -> {
+            o.setTitle((n.getTitle() == null) ? o.getTitle() : n.getTitle());
+            o.setContent((n.getContent() == null) ? o.getContent() : n.getContent());
+            return o;
+            
+        }).flatMap(template::save);
+    }
+    
+    /**
+     * Delete Blog with specific id from database.
+     * 
+     * @param id Blogs id to delete
+     * @return Deleted blog
+     */
+    public Mono<Blog> delete(String id) {
+        return template.findAndRemove(new Query(Criteria.where("id").is(id)), Blog.class);
+    }
 }
 

@@ -2,6 +2,7 @@
 package bloogie.backend.config;
 
 import bloogie.backend.handler.AccountHandler;
+import bloogie.backend.handler.AuthorizationHandlerFilterFunction;
 import bloogie.backend.handler.BlogHandler;
 import bloogie.backend.handler.LoginHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.reactive.config.CorsRegistry;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
 import static org.springframework.web.reactive.function.server.RequestPredicates.accept;
+import static org.springframework.web.reactive.function.server.RequestPredicates.path;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -60,10 +62,11 @@ public class DevelopmentWebConfiguration implements WebFluxConfigurer {
      */
     @Bean
     public RouterFunction<ServerResponse> accountRouter() {
-        return route().path("/accounts", builder -> builder
-                .GET("/{id}", accept(APPLICATION_JSON), accountHandler::getAccount)
-                .PUT("/{id}", accept(APPLICATION_JSON), accountHandler::updateAccount)
-                .DELETE("/{id}", accountHandler::deleteAccount)
+        return route().path("/accounts", b1 -> b1
+                .nest(path("/{id}"), b2 -> b2
+                    .GET("", accept(APPLICATION_JSON), accountHandler::getAccount)
+                    .PUT("", accept(APPLICATION_JSON), accountHandler::updateAccount)
+                    .DELETE("", accountHandler::deleteAccount))
                 .GET("", accept(APPLICATION_JSON), accountHandler::listAccounts)
                 .POST("", accountHandler::createAccount))
                 .build();
@@ -71,13 +74,18 @@ public class DevelopmentWebConfiguration implements WebFluxConfigurer {
     
     /**
      * Functional endpoint for Blog resource. Base path is /blog and
-     * the options are GET all blogs or POST a new blog.
+     * the options are GET all blogs, GET one blog, PUT updated blog, DELETE blog
+     * or POST a new blog.
      * 
      * @return Router function with response to Blog request
      */
     @Bean
     public RouterFunction<ServerResponse> blogRouter() {
-        return route().path("/blogs", builder -> builder
+        return route().path("/blogs", b1 -> b1
+                .nest(path("/{id}"), b2 -> b2
+                    .GET("", accept(APPLICATION_JSON), blogHandler::getBlog)
+                    .PUT("", accept(APPLICATION_JSON), blogHandler::updateBlog)
+                    .DELETE("", blogHandler::deleteBlog))
                 .GET("", accept(APPLICATION_JSON), blogHandler::listBlogs)
                 .POST("", blogHandler::createBlog))
                 .build();

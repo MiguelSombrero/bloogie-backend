@@ -4,10 +4,12 @@ package bloogie.backend.handler;
 import bloogie.backend.domain.Account;
 import bloogie.backend.service.AccountService;
 import bloogie.backend.validator.AccountValidator;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -95,7 +97,7 @@ public class AccountHandler {
      * is activated with DELETE request to path /account/{id}.
      * 
      * @param request Request received from the client
-     * @return Status 204 (no content) response with updated account in the body
+     * @return Status 204 (no content) response
      */
     public Mono<ServerResponse> deleteAccount(ServerRequest request) {
         return accountService.delete(request.pathVariable("id"))

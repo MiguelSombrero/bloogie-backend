@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,6 +31,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class Account {
     @Id
     private String id;
+    
     private String name;
     
     @Indexed(unique = true)
