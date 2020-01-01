@@ -47,8 +47,8 @@ public class BlogRouterTest {
     @BeforeEach
     public void setUp() {
         this.account = utils.giveUser("oidasajfdlihfaidh", "Jukka Riekkonen", "jukka", "jukka");
-        this.blog1 = utils.giveBlog("sdfjhasdfasd", "New blog", "This is my new blog", null);
-        this.blog2 = utils.giveBlog("daufa9u0ouhfoauhdf", "To be or not to be", "That is the guestion", null);
+        this.blog1 = utils.giveBlog("sdfjhasdfasd", "New blog", "This is my new blog", account);
+        this.blog2 = utils.giveBlog("daufa9u0ouhfoauhdf", "To be or not to be", "That is the guestion", account);
     }
     
     @Test

@@ -2,14 +2,16 @@
 
 This is my personal project for practicing web development. Bloogie backend is simple reactive RESTfull web service implemented with Java 8 and Spring Webflux. It serves `Account` and `Blog` resources from following functional endpoints:
 
-    GET /account/{id} - fetch account with id={id}
-    GET /account - fetch all accounts
-    POST /account - create new account
-
     POST /login - authenticate with Bsic authentication
 
     GET /blog - fetch all blogs
     POST /blog - create new blog
+
+    GET /account/{id} - fetch account with id={id}
+    PUT /account/{id} - update existing account
+    DELETE /account/{id} - delete account
+    GET /account - fetch all accounts
+    POST /account - create new account
 
 I have also created a blog service upon this backend, and it can be viewed here: [bloogie-react](https://github.com/MiguelSombrero/bloogie-react).
 

@@ -33,8 +33,15 @@ public class BlogService {
      * @return All blogs
      */
     public Flux<Blog> findAll() {
-        return template.findAll(Blog.class);
+        return template.findAll(Blog.class)
+                .flatMap(blog -> {
+                    return accountService.findOne(blog.getAuthor_id()).zipWith(Mono.just(blog), (a, b) -> {
+                        b.setAuthor(a);
+                        return b;
+                    });
+                });
     }
+    
     
     /**
      * Save Blog to database. Before saving, method sets
@@ -48,11 +55,13 @@ public class BlogService {
     public Mono<Blog> save(Mono<Blog> blog) {
         return accountService.getAuthenticatedUser().zipWith(blog, (a, b) -> {
             b.setCreated(new Date());
+            b.setAuthor_id(a.getId());
             b.setAuthor(a);
             return b;
             
         }).flatMap(template::save);
     }
+    
     
 }
 

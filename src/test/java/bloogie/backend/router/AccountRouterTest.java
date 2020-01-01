@@ -7,12 +7,12 @@ import bloogie.backend.utils.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -94,7 +94,7 @@ public class AccountRouterTest {
     @Test
     @WithMockUser
     public void canGetUserByIdFromDatabase() {
-        Mockito.when(accountService.findById("oidasajfdlihfaidh")).thenReturn(Mono.just(account2));
+        Mockito.when(accountService.findOne("oidasajfdlihfaidh")).thenReturn(Mono.just(account2));
          
         client
                 .get().uri("/accounts/oidasajfdlihfaidh")
@@ -113,11 +113,73 @@ public class AccountRouterTest {
     
     @Test
     public void cannotGetUserByIdFromDatabaseIfNotAuthorized() {
-        Mockito.when(accountService.findById("oidasajfdlihfaidh")).thenReturn(Mono.just(account2));
+        Mockito.when(accountService.findOne("oidasajfdlihfaidh")).thenReturn(Mono.just(account2));
          
         client
                 .get().uri("/accounts/{id}", "oidasajfdlihfaidh")
                 .accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                    .isUnauthorized()
+                .expectBody()
+                    .isEmpty();
+    }
+    
+    @Test
+    @WithMockUser
+    public void canUpdateUserWhenAuthenticated() {
+        Mockito.when(accountService.update(any(Mono.class), eq("oidasajfdlihfaidh"))).thenReturn(Mono.just(account2));
+         
+        client
+                .put().uri("/accounts/{id}", "oidasajfdlihfaidh")
+                .accept(APPLICATION_JSON)
+                .body(Mono.just(account1), Account.class)
+                .exchange()
+                .expectStatus()
+                    .isCreated()
+                .expectHeader()
+                    .contentType(APPLICATION_JSON)
+                .expectBody()
+                    .jsonPath("$.id").isEqualTo("oidasajfdlihfaidh")
+                    .jsonPath("$.name").isEqualTo("Jukka Riekkonen")
+                    .jsonPath("$.username").isEqualTo("jukka")
+                    .jsonPath("$.password").doesNotExist();
+    }
+    
+    @Test
+    public void cannotUpdateUserIfNotAuthorized() {
+        Mockito.when(accountService.update(any(Mono.class), eq("oidasajfdlihfaidh"))).thenReturn(Mono.just(account2));
+         
+        client
+                .put().uri("/accounts/oidasajfdlihfaidh")
+                .accept(APPLICATION_JSON)
+                .exchange()
+                .expectStatus()
+                    .isUnauthorized()
+                .expectBody()
+                    .isEmpty();
+    }
+    
+    @Test
+    @WithMockUser
+    public void canDeleteUserWhenAuthenticated() {
+        Mockito.when(accountService.delete(eq("oidasajfdlihfaidh"))).thenReturn(Mono.just(account2));
+         
+        client
+                .delete().uri("/accounts/{id}", "oidasajfdlihfaidh")
+                .exchange()
+                .expectStatus()
+                    .isNoContent()
+                .expectBody()
+                    .isEmpty();
+    }
+    
+    @Test
+    public void cannotDeleteUserWhenNotAuthenticated() {
+        Mockito.when(accountService.delete(eq("oidasajfdlihfaidh"))).thenReturn(Mono.just(account2));
+         
+        client
+                .delete().uri("/accounts/{id}", "oidasajfdlihfaidh")
                 .exchange()
                 .expectStatus()
                     .isUnauthorized()

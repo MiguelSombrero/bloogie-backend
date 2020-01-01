@@ -81,8 +81,18 @@ public class AccountService {
      * @param id Accounts id
      * @return Found Account
      */
-    public Mono<Account> findById(String id) {
+    public Mono<Account> findOne(String id) {
         return template.findById(id, Account.class);
+    }
+    
+    /**
+     * Delete Account with specific id from database.
+     * 
+     * @param id Accounts id to delete
+     * @return Deleted account
+     */
+    public Mono<Account> delete(String id) {
+        return template.findAndRemove(new Query(Criteria.where("id").is(id)), Account.class);
     }
     
     /**
