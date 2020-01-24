@@ -47,6 +47,7 @@ public class DevelopmentSecurityConfiguration {
                 .pathMatchers("/login").permitAll()
                 .pathMatchers(HttpMethod.POST, "/accounts").permitAll()
                 .pathMatchers(HttpMethod.GET, "/blogs").permitAll()
+                .pathMatchers(HttpMethod.GET, "/posts").permitAll()
                 .anyExchange().authenticated()
                 .and()
             .build();

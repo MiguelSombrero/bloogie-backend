@@ -8,8 +8,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * Class for validating Blog objects. Note that these validation
- * constraints ARE NOT sufficient for production environment.
+ * Class for validating Blog objects.
  * 
  * @author miika
  */
@@ -23,29 +22,21 @@ public class BlogValidator implements Validator {
     }
 
     /**
-     * Validates given Blog. Title must be within 1-50 characters and
-     * content within 5-5000 characters. Also white space is no allowed.
+     * Validates given Blog. Blogs name must be within 5-100 characters. Also white space is no allowed.
      * 
      * @param o Object to validate
      * @param errors Validation errors
      */
     @Override
     public void validate(Object o, Errors errors) {
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "title", "field.required");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "content", "field.required");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "field.required");
         
         Blog b = (Blog) o;
         
-        if (b.getTitle().trim().length() < 1) {
-            errors.rejectValue("title", "title.short");
-        } else if (b.getTitle().trim().length() > 50) {
-            errors.rejectValue("title", "title.long");
-        }
-        
-        if (b.getContent().trim().length() < 5) {
-            errors.rejectValue("content", "content.short");
-        } else if (b.getContent().trim().length() > 5000) {
-            errors.rejectValue("content", "content.long");
+        if (b.getName().trim().length() < 5) {
+            errors.rejectValue("name", "name.short");
+        } else if (b.getName().trim().length() > 100) {
+            errors.rejectValue("name", "name.long");
         }
     }
     

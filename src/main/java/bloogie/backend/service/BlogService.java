@@ -1,8 +1,8 @@
 
 package bloogie.backend.service;
 
-import bloogie.backend.domain.Account;
 import bloogie.backend.domain.Blog;
+import bloogie.backend.domain.Post;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -29,21 +29,17 @@ public class BlogService {
     @Autowired
     private AccountService accountService;
     
+    @Autowired
+    private PostService postService;
+    
     /**
      * Fetch all Blogs from the database.
      * 
      * @return All blogs
      */
     public Flux<Blog> findAll() {
-        return template.findAll(Blog.class)
-                .flatMap(blog -> {
-                    return accountService.findOne(blog.getAuthor_id()).zipWith(Mono.just(blog), (a, b) -> {
-                        b.setAuthor(a);
-                        return b;
-                    });
-                });
+        return template.findAll(Blog.class);
     }
-    
     
     /**
      * Save Blog to database. Before saving, method sets
@@ -56,7 +52,6 @@ public class BlogService {
      */
     public Mono<Blog> save(Mono<Blog> blog) {
         return accountService.getAuthenticatedUser().zipWith(blog, (a, b) -> {
-            b.setCreated(new Date());
             b.setAuthor_id(a.getId());
             b.setAuthor(a);
             return b;
@@ -75,16 +70,15 @@ public class BlogService {
     }
     
     /**
-     * Update existing Blog.
+     * Update existing Blog. Only name can be updated
      * 
-     * @param newBlog Account with updated info
+     * @param newBlog Blog with updated info
      * @param id Id of Blog to update
      * @return Updated Blog
      */
     public Mono<Blog> update(Mono<Blog> newBlog, String id) {
         return template.findById(id, Blog.class).zipWith(newBlog, (o, n) -> {
-            o.setTitle((n.getTitle() == null) ? o.getTitle() : n.getTitle());
-            o.setContent((n.getContent() == null) ? o.getContent() : n.getContent());
+            o.setName((n.getName() == null) ? o.getName() : n.getName());
             return o;
             
         }).flatMap(template::save);

@@ -2,8 +2,8 @@
 package bloogie.backend.config;
 
 import bloogie.backend.handler.AccountHandler;
-import bloogie.backend.handler.AuthorizationHandlerFilterFunction;
 import bloogie.backend.handler.BlogHandler;
+import bloogie.backend.handler.PostHandler;
 import bloogie.backend.handler.LoginHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +40,9 @@ public class DevelopmentWebConfiguration implements WebFluxConfigurer {
     private AccountHandler accountHandler;
     
     @Autowired
+    private PostHandler postHandler;
+    
+    @Autowired
     private BlogHandler blogHandler;
     
     /**
@@ -69,6 +72,25 @@ public class DevelopmentWebConfiguration implements WebFluxConfigurer {
                     .DELETE("", accountHandler::deleteAccount))
                 .GET("", accept(APPLICATION_JSON), accountHandler::listAccounts)
                 .POST("", accountHandler::createAccount))
+                .build();
+    }
+    
+    /**
+     * Functional endpoint for Post resource. Base path is /post and
+     * the options are GET all posts, GET one post, PUT updated post, DELETE post
+     * or POST a new post.
+     * 
+     * @return Router function with response to Post request
+     */
+    @Bean
+    public RouterFunction<ServerResponse> postRouter() {
+        return route().path("/posts", b1 -> b1
+                .nest(path("/{id}"), b2 -> b2
+                    .GET("", accept(APPLICATION_JSON), postHandler::getPost)
+                    .PUT("", accept(APPLICATION_JSON), postHandler::updatePost)
+                    .DELETE("", postHandler::deletePost))
+                .GET("", accept(APPLICATION_JSON), postHandler::listPosts)
+                .POST("", postHandler::createPost))
                 .build();
     }
     

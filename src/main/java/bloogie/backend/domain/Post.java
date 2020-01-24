@@ -2,8 +2,7 @@
 package bloogie.backend.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,18 +12,20 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
- * Class for Blog object. Blog is a kind of platform which in
- * user can publish a posts.
+ * Class for Post object. Post is a story with a title and content, which
+ * users can write in the Blog.
  * 
  * @author miika
  */
 
 @Data @NoArgsConstructor @AllArgsConstructor
-@Document(collection = "blogs")
-public class Blog {
+@Document(collection = "posts")
+public class Post {
     @Id
     private String id;
-    private String name;
+    private Date created;
+    private String title;
+    private String content;
     
     @Indexed
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -35,9 +36,9 @@ public class Blog {
     
     @Indexed
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private List<String> post_ids = new ArrayList<>();
+    private String blog_id;
     
     @Transient
-    private List<Post> posts = new ArrayList<>();
-    
+    private Blog blog;
 }
+

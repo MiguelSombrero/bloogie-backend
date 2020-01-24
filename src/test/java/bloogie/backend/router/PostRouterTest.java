@@ -2,9 +2,9 @@
 package bloogie.backend.router;
 
 import bloogie.backend.domain.Account;
-import bloogie.backend.domain.Blog;
+import bloogie.backend.domain.Post;
 import bloogie.backend.service.AccountService;
-import bloogie.backend.service.BlogService;
+import bloogie.backend.service.PostService;
 import bloogie.backend.utils.TestUtils;
 import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +29,7 @@ import reactor.core.publisher.Mono;
 
 @AutoConfigureWebTestClient
 @SpringBootTest
-public class BlogRouterTest {
+public class PostRouterTest {
     
     @Autowired
     private WebTestClient client;
@@ -38,11 +38,11 @@ public class BlogRouterTest {
     private TestUtils utils;
     
     @MockBean
-    private BlogService blogService;
+    private PostService blogService;
     
     private Account account;
-    private Blog blog1;
-    private Blog blog2;
+    private Post blog1;
+    private Post blog2;
     
     @BeforeEach
     public void setUp() {
@@ -58,7 +58,7 @@ public class BlogRouterTest {
         
         client
                 .post().uri("/blogs")
-                .body(Mono.just(blog1), Blog.class)
+                .body(Mono.just(blog1), Post.class)
                 .exchange()
                 .expectStatus()
                     .isOk()
@@ -80,7 +80,7 @@ public class BlogRouterTest {
         
         client
                 .post().uri("/blogs")
-                .body(Mono.just(blog1), Blog.class)
+                .body(Mono.just(blog1), Post.class)
                 .exchange()
                 .expectStatus()
                     .isUnauthorized()
@@ -100,7 +100,7 @@ public class BlogRouterTest {
                     .isOk()
                 .expectHeader()
                     .contentType(APPLICATION_JSON)
-                .expectBodyList(Blog.class)
+                .expectBodyList(Post.class)
                     .hasSize(2);
     }
     

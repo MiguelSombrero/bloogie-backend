@@ -1,7 +1,6 @@
 
 package bloogie.backend.handler;
 
-import bloogie.backend.domain.Account;
 import bloogie.backend.domain.Blog;
 import bloogie.backend.service.BlogService;
 import bloogie.backend.validator.BlogValidator;

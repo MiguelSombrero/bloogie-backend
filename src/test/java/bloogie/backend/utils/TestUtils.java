@@ -2,7 +2,7 @@ package bloogie.backend.utils;
 
 
 import bloogie.backend.domain.Account;
-import bloogie.backend.domain.Blog;
+import bloogie.backend.domain.Post;
 import java.util.Base64;
 import java.util.Date;
 import org.springframework.stereotype.Component;
@@ -30,8 +30,8 @@ public class TestUtils {
         return a;
     }
     
-    public Blog giveBlog(String id, String title, String content, Account author) {
-        Blog b = new Blog();
+    public Post giveBlog(String id, String title, String content, Account author) {
+        Post b = new Post();
         b.setId(id);
         b.setTitle(title);
         b.setContent(content);
