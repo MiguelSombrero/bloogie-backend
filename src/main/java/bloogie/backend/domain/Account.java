@@ -41,6 +41,18 @@ public class Account {
     @JsonProperty(access = Access.WRITE_ONLY)
     private List<String> authorities = new ArrayList<>();
     
+    @Indexed
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private List<String> blogIds = new ArrayList<>();
+    
+    @Transient
+    private List<Blog> blogs = new ArrayList<>();
+    
+    
+    public void setBlog(String id) {
+        this.blogIds.add(id);
+    }
+    
     public void setAuthority(String authority) {
         this.authorities.add(authority);
     }

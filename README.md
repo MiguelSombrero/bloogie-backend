@@ -1,19 +1,20 @@
 # Bloogie backend
 
-This is my personal project for practicing web development. Bloogie backend is simple reactive RESTfull web service implemented with Java 8 and Spring Webflux. It serves `Account` and `Blog` resources from following functional endpoints:
+This is my personal project for practicing reactive web development. Bloogie backend is reactive RESTfull web service implemented with Java 8 and Spring Webflux. It serves `Account`, `Blog` and `Post` resources from following functional endpoints:
 
-    POST /login - authenticate with Bsic authentication
+    POST /login - authenticate with Basic authentication
 
-    GET /blog - fetch all blogs
-    POST /blog - create new blog
+    GET /{basePath}/{id} - fetch resource by id
+    PUT /{basePath}/{id} - update existing resource
+    DELETE /{basePath}/{id} - delete resource by id
+    GET /{basePath} - fetch all resources
+    POST /{basePath} - create new resource
 
-    GET /account/{id} - fetch account with id={id}
-    PUT /account/{id} - update existing account
-    DELETE /account/{id} - delete account
-    GET /account - fetch all accounts
-    POST /account - create new account
+Here the *{basePath}* is determined by resource as follows:
 
-I have also created a blog service upon this backend, and it can be viewed here: [bloogie-react](https://github.com/MiguelSombrero/bloogie-react).
+    /accounts - for Account resources
+    /blogs - for Blog resources
+    /posts - for Post resource
 
 ## Implementation
 
@@ -29,7 +30,7 @@ Application uses reactive mongo repositories, which can be configured via `React
 
 ## System requirements
 
-Application requires Java 8+. It also requires local mongoDB installation OR you have to define remote mongoDB service in application-{profile}.properties file. Maven is required for managing the project.
+Application requires Java 8+. It also requires local mongoDB installation OR you have to define remote mongoDB service in application-{profile}.properties file. Maven is required for managing and building the project.
 
 ## Installation
 
@@ -54,7 +55,5 @@ Run executable jar-file
 ## Todo
 
 - Unit tests covers now only router functions. No integration tests are implemented
-- Validation of Account and Blog object could be more comprehensive
-- Currently service provides only `Account` and `Blog` resources. With real-life blog service, it would be nice to have comments and some other interaction too, likes maybe
-
-When I am student or unemployed at next time, I promise to fix these :)
+- Validations object could be more comprehensive
+- With real-life blog service, it would be nice to have more interaction. At least `Comment` and `Like` model objects would be nice

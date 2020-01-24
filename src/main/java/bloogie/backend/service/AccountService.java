@@ -2,6 +2,8 @@
 package bloogie.backend.service;
 
 import bloogie.backend.domain.Account;
+import bloogie.backend.domain.Blog;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -29,7 +31,26 @@ public class AccountService {
     private ReactiveMongoTemplate template;
  
     @Autowired
+    private BlogService blogService;
+    
+    @Autowired
     private PasswordEncoder encoder;
+    
+    /**
+     * Fecth all blogs for given user and adds them to blogs attribute.
+     * This method is used for populating Account with Blogs when Account
+     * is requested
+     * 
+     * @param account Account whose blogs to fetch
+     * @return Account
+     */
+    private Mono<Account> addBlogsToAccount(Account account) {
+        return blogService.findBlogsByAccount(account).collectList()
+                .zipWith(Mono.just(account), (b, a) -> {
+                    a.setBlogs(b);
+                    return a;
+                });
+    }
     
     /**
      * Fetch all Accounts from the database.
@@ -37,7 +58,7 @@ public class AccountService {
      * @return All accounts
      */
     public Flux<Account> findAll() {
-        return template.findAll(Account.class);
+        return template.findAll(Account.class).flatMap(this::addBlogsToAccount);
     }
     
     /**
@@ -80,7 +101,7 @@ public class AccountService {
      * @return Found Account
      */
     public Mono<Account> findOne(String id) {
-        return template.findById(id, Account.class);
+        return template.findById(id, Account.class).flatMap(this::addBlogsToAccount);
     }
     
     /**

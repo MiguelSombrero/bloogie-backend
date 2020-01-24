@@ -1,9 +1,8 @@
 
 package bloogie.backend.service;
 
+import bloogie.backend.domain.Account;
 import bloogie.backend.domain.Blog;
-import bloogie.backend.domain.Post;
-import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -42,21 +41,17 @@ public class BlogService {
     }
     
     /**
-     * Save Blog to database. Before saving, method sets
-     * creation time and author for the blog. Author is
-     * fetched from the database according to username
-     * found in security context
+     * Save Blog to database. This also saves blogs id to account
      * 
      * @param blog Blog to save
      * @return Saved blog
      */
     public Mono<Blog> save(Mono<Blog> blog) {
-        return accountService.getAuthenticatedUser().zipWith(blog, (a, b) -> {
-            b.setAuthor_id(a.getId());
-            b.setAuthor(a);
+        return template.save(blog).zipWith(accountService.getAuthenticatedUser(), (b, a) -> {
+            a.setBlog(b.getId());
+            template.save(a).subscribe();
             return b;
-            
-        }).flatMap(template::save);
+        });
     }
     
     /**
@@ -92,6 +87,16 @@ public class BlogService {
      */
     public Mono<Blog> delete(String id) {
         return template.findAndRemove(new Query(Criteria.where("id").is(id)), Blog.class);
+    }
+    
+    /**
+     * Fetch all blogs which belongs to given user.
+     * 
+     * @param account User whose blogs to fetch
+     * @return Users blogs
+     */
+    public Flux<Blog> findBlogsByAccount(Account account) {
+        return template.find(new Query(Criteria.where("id").in(account.getBlogIds())), Blog.class);
     }
 }
 

@@ -2,11 +2,10 @@
 package bloogie.backend.router;
 
 import bloogie.backend.domain.Account;
+import bloogie.backend.domain.Blog;
 import bloogie.backend.domain.Post;
-import bloogie.backend.service.AccountService;
 import bloogie.backend.service.PostService;
 import bloogie.backend.utils.TestUtils;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -38,27 +36,29 @@ public class PostRouterTest {
     private TestUtils utils;
     
     @MockBean
-    private PostService blogService;
+    private PostService postService;
     
     private Account account;
-    private Post blog1;
-    private Post blog2;
+    private Blog blog;
+    private Post post1;
+    private Post post2;
     
     @BeforeEach
     public void setUp() {
         this.account = utils.giveUser("oidasajfdlihfaidh", "Jukka Riekkonen", "jukka", "jukka");
-        this.blog1 = utils.giveBlog("sdfjhasdfasd", "New blog", "This is my new blog", account);
-        this.blog2 = utils.giveBlog("daufa9u0ouhfoauhdf", "To be or not to be", "That is the guestion", account);
+        this.blog = utils.giveBlog("Parsa blogi", account);
+        this.post1 = utils.givePost("sdfjhasdfasd", "New blog", "This is my new blog", account, blog);
+        this.post2 = utils.givePost("daufa9u0ouhfoauhdf", "To be or not to be", "That is the guestion", account, blog);
     }
     
     @Test
     @WithMockUser
     public void canAddBlogToDatabase() {
-        Mockito.when(blogService.save(any(Mono.class))).thenReturn(Mono.just(blog1));
+        Mockito.when(postService.save(any(Mono.class))).thenReturn(Mono.just(post1));
         
         client
                 .post().uri("/blogs")
-                .body(Mono.just(blog1), Post.class)
+                .body(Mono.just(post1), Post.class)
                 .exchange()
                 .expectStatus()
                     .isOk()
@@ -76,11 +76,11 @@ public class PostRouterTest {
     
     @Test
     public void cannotAddBlogToDatabaseIfNotAuthorized() {
-        Mockito.when(blogService.save(any(Mono.class))).thenReturn(Mono.just(blog1));
+        Mockito.when(postService.save(any(Mono.class))).thenReturn(Mono.just(post1));
         
         client
                 .post().uri("/blogs")
-                .body(Mono.just(blog1), Post.class)
+                .body(Mono.just(post1), Post.class)
                 .exchange()
                 .expectStatus()
                     .isUnauthorized()
@@ -90,7 +90,7 @@ public class PostRouterTest {
     
     @Test
     public void canGetBlogsFromDatabase() {
-        Mockito.when(blogService.findAll()).thenReturn(Flux.just(blog1, blog2));
+        Mockito.when(postService.findAll()).thenReturn(Flux.just(post1, post2));
          
         client
                 .get().uri("/blogs")

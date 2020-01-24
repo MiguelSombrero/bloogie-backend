@@ -2,6 +2,7 @@ package bloogie.backend.utils;
 
 
 import bloogie.backend.domain.Account;
+import bloogie.backend.domain.Blog;
 import bloogie.backend.domain.Post;
 import java.util.Base64;
 import java.util.Date;
@@ -30,13 +31,20 @@ public class TestUtils {
         return a;
     }
     
-    public Post giveBlog(String id, String title, String content, Account author) {
-        Post b = new Post();
-        b.setId(id);
-        b.setTitle(title);
-        b.setContent(content);
-        b.setCreated(new Date());
-        b.setAuthor(author);
+    public Blog giveBlog(String name, Account author) {
+        Blog b = new Blog();
+        b.setName(name);
         return b;
+    }
+    
+    public Post givePost(String id, String title, String content, Account author, Blog blog) {
+        Post p = new Post();
+        p.setId(id);
+        p.setTitle(title);
+        p.setContent(content);
+        p.setCreated(new Date());
+        p.setAuthor(author);
+        p.setBlog(blog);
+        return p;
     }
 }
