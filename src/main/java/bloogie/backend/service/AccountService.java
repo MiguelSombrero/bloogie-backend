@@ -57,7 +57,7 @@ public class AccountService {
      * 
      * @return All accounts
      */
-    public Flux<Account> findAll() {
+    public Flux<Account> findAllAccounts() {
         return template.findAll(Account.class).flatMap(this::addBlogsToAccount);
     }
     
@@ -68,7 +68,7 @@ public class AccountService {
      * @param account Account to save
      * @return Saved account
      */
-    public Mono<Account> save(Mono<Account> account) {
+    public Mono<Account> saveAccount(Mono<Account> account) {
         return account.map(a -> {
             a.setPassword(encoder.encode(a.getPassword()));
             a.setAuthority("USER");
@@ -85,7 +85,7 @@ public class AccountService {
      * @param id Id of Account to update
      * @return Updated account
      */
-    public Mono<Account> update(Mono<Account> newAccount, String id) {
+    public Mono<Account> updateAccount(Mono<Account> newAccount, String id) {
         return template.findById(id, Account.class).zipWith(newAccount, (o, n) -> {
             o.setPassword((n.getPassword() == null) ? o.getPassword() : encoder.encode(n.getPassword()));
             o.setName((n.getName() == null) ? o.getName() : n.getName());
@@ -100,8 +100,8 @@ public class AccountService {
      * @param id Accounts id
      * @return Found Account
      */
-    public Mono<Account> findOne(String id) {
-        return template.findById(id, Account.class).flatMap(this::addBlogsToAccount);
+    public Mono<Account> findOneAccount(String id) {
+        return template.findById(id, Account.class);
     }
     
     /**
@@ -110,7 +110,7 @@ public class AccountService {
      * @param id Accounts id to delete
      * @return Deleted account
      */
-    public Mono<Account> delete(String id) {
+    public Mono<Account> deleteAccount(String id) {
         return template.findAndRemove(new Query(Criteria.where("id").is(id)), Account.class);
     }
     

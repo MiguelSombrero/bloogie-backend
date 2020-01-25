@@ -43,7 +43,7 @@ public class AccountHandler {
      * @return Status 200 response with all in the accounts body
      */
     public Mono<ServerResponse> listAccounts(ServerRequest request) {
-        Flux<Account> accounts = accountService.findAll();
+        Flux<Account> accounts = accountService.findAllAccounts();
         return ok().contentType(APPLICATION_JSON).body(accounts, Account.class);
     }
     
@@ -58,7 +58,7 @@ public class AccountHandler {
      */
     public Mono<ServerResponse> createAccount(ServerRequest request) {
         Mono<Account> account = request.bodyToMono(Account.class).doOnNext(this::validate);
-        return accountService.save(account).flatMap(a -> ok().build());
+        return accountService.saveAccount(account).flatMap(a -> ok().build());
     }
     
     /**
@@ -70,7 +70,7 @@ public class AccountHandler {
      * @return Status 200 response with requested account in the body
      */
     public Mono<ServerResponse> getAccount(ServerRequest request) {
-        return accountService.findOne(request.pathVariable("id"))
+        return accountService.findOneAccount(request.pathVariable("id"))
                 .flatMap(account -> ok().contentType(APPLICATION_JSON).bodyValue(account))
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
@@ -86,7 +86,7 @@ public class AccountHandler {
     public Mono<ServerResponse> updateAccount(ServerRequest request) {
         Mono<Account> account = request.bodyToMono(Account.class);
         
-        return accountService.update(account, request.pathVariable("id"))
+        return accountService.updateAccount(account, request.pathVariable("id"))
                 .flatMap(a -> status(201).contentType(APPLICATION_JSON).bodyValue(a));
     }
     
@@ -98,7 +98,7 @@ public class AccountHandler {
      * @return Status 204 (no content) response
      */
     public Mono<ServerResponse> deleteAccount(ServerRequest request) {
-        return accountService.delete(request.pathVariable("id"))
+        return accountService.deleteAccount(request.pathVariable("id"))
                 .flatMap(a -> noContent().build());
     }
     

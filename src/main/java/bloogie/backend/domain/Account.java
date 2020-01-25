@@ -49,7 +49,7 @@ public class Account {
     private List<Blog> blogs = new ArrayList<>();
     
     
-    public void setBlog(String id) {
+    public void setBlogId(String id) {
         this.blogIds.add(id);
     }
     

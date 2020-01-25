@@ -31,8 +31,9 @@ public class TestUtils {
         return a;
     }
     
-    public Blog giveBlog(String name, Account author) {
+    public Blog giveBlog(String id, String name, Account author) {
         Blog b = new Blog();
+        b.setId(id);
         b.setName(name);
         return b;
     }
@@ -43,7 +44,6 @@ public class TestUtils {
         p.setTitle(title);
         p.setContent(content);
         p.setCreated(new Date());
-        p.setAuthor(author);
         p.setBlog(blog);
         return p;
     }

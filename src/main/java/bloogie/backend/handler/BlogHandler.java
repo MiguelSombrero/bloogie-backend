@@ -43,7 +43,7 @@ public class BlogHandler {
      * @return Status 200 response with all blogs in body
      */
     public Mono<ServerResponse> listBlogs(ServerRequest request) {
-        Flux<Blog> blogs = blogService.findAll();
+        Flux<Blog> blogs = blogService.findAllBlogs();
         return ok().contentType(APPLICATION_JSON).body(blogs, Blog.class);
     }
     
@@ -58,7 +58,7 @@ public class BlogHandler {
      */
     public Mono<ServerResponse> createBlog(ServerRequest request) {
         Mono<Blog> blog = request.bodyToMono(Blog.class).doOnNext(this::validate);
-        return blogService.save(blog).flatMap(b -> ok().contentType(APPLICATION_JSON).bodyValue(b));
+        return blogService.saveBlog(blog).flatMap(b -> ok().contentType(APPLICATION_JSON).bodyValue(b));
     }
     
     /**
@@ -70,7 +70,7 @@ public class BlogHandler {
      * @return Status 200 response with requested blog in the body
      */
     public Mono<ServerResponse> getBlog(ServerRequest request) {
-        return blogService.findOne(request.pathVariable("id"))
+        return blogService.findOneBlog(request.pathVariable("id"))
                 .flatMap(blog -> ok().contentType(APPLICATION_JSON).bodyValue(blog))
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
@@ -86,7 +86,7 @@ public class BlogHandler {
     public Mono<ServerResponse> updateBlog(ServerRequest request) {
         Mono<Blog> blog = request.bodyToMono(Blog.class);
         
-        return blogService.update(blog, request.pathVariable("id"))
+        return blogService.updateBlog(blog, request.pathVariable("id"))
                 .flatMap(b -> status(201).contentType(APPLICATION_JSON).bodyValue(b));
     }
     
@@ -98,7 +98,7 @@ public class BlogHandler {
      * @return Status 204 (no content) response
      */
     public Mono<ServerResponse> deleteBlog(ServerRequest request) {
-        return blogService.delete(request.pathVariable("id"))
+        return blogService.deleteBlog(request.pathVariable("id"))
                 .flatMap(b -> noContent().build());
     }
     

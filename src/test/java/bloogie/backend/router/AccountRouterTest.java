@@ -48,7 +48,7 @@ public class AccountRouterTest {
     
     @Test
     public void canAddUserToDatabase() {
-        Mockito.when(accountService.save(any(Mono.class))).thenReturn(Mono.just(account1));
+        Mockito.when(accountService.saveAccount(any(Mono.class))).thenReturn(Mono.just(account1));
                 
         client
                 .post().uri("/accounts")
@@ -63,7 +63,7 @@ public class AccountRouterTest {
     @Test
     @WithMockUser
     public void canGetUsersFromDatabaseWhenAuthenticated() {
-        Mockito.when(accountService.findAll()).thenReturn(Flux.just(account1, account2));
+        Mockito.when(accountService.findAllAccounts()).thenReturn(Flux.just(account1, account2));
          
         client
                 .get().uri("/accounts")
@@ -79,7 +79,7 @@ public class AccountRouterTest {
     
     @Test
     public void cannotGetUsersFromDatabaseWhenNotAuthenticated() {
-        Mockito.when(accountService.findAll()).thenReturn(Flux.just(account1, account2));
+        Mockito.when(accountService.findAllAccounts()).thenReturn(Flux.just(account1, account2));
          
         client
                 .get().uri("/accounts")
@@ -94,7 +94,7 @@ public class AccountRouterTest {
     @Test
     @WithMockUser
     public void canGetUserByIdFromDatabase() {
-        Mockito.when(accountService.findOne("oidasajfdlihfaidh")).thenReturn(Mono.just(account2));
+        Mockito.when(accountService.findOneAccount("oidasajfdlihfaidh")).thenReturn(Mono.just(account2));
          
         client
                 .get().uri("/accounts/oidasajfdlihfaidh")
@@ -113,7 +113,7 @@ public class AccountRouterTest {
     
     @Test
     public void cannotGetUserByIdFromDatabaseIfNotAuthorized() {
-        Mockito.when(accountService.findOne("oidasajfdlihfaidh")).thenReturn(Mono.just(account2));
+        Mockito.when(accountService.findOneAccount("oidasajfdlihfaidh")).thenReturn(Mono.just(account2));
          
         client
                 .get().uri("/accounts/{id}", "oidasajfdlihfaidh")
@@ -128,7 +128,7 @@ public class AccountRouterTest {
     @Test
     @WithMockUser
     public void canUpdateUserWhenAuthenticated() {
-        Mockito.when(accountService.update(any(Mono.class), eq("oidasajfdlihfaidh"))).thenReturn(Mono.just(account2));
+        Mockito.when(accountService.updateAccount(any(Mono.class), eq("oidasajfdlihfaidh"))).thenReturn(Mono.just(account2));
          
         client
                 .put().uri("/accounts/{id}", "oidasajfdlihfaidh")
@@ -148,7 +148,7 @@ public class AccountRouterTest {
     
     @Test
     public void cannotUpdateUserIfNotAuthorized() {
-        Mockito.when(accountService.update(any(Mono.class), eq("oidasajfdlihfaidh"))).thenReturn(Mono.just(account2));
+        Mockito.when(accountService.updateAccount(any(Mono.class), eq("oidasajfdlihfaidh"))).thenReturn(Mono.just(account2));
          
         client
                 .put().uri("/accounts/oidasajfdlihfaidh")
@@ -163,7 +163,7 @@ public class AccountRouterTest {
     @Test
     @WithMockUser
     public void canDeleteUserWhenAuthenticated() {
-        Mockito.when(accountService.delete(eq("oidasajfdlihfaidh"))).thenReturn(Mono.just(account2));
+        Mockito.when(accountService.deleteAccount(eq("oidasajfdlihfaidh"))).thenReturn(Mono.just(account2));
          
         client
                 .delete().uri("/accounts/{id}", "oidasajfdlihfaidh")
@@ -176,7 +176,7 @@ public class AccountRouterTest {
     
     @Test
     public void cannotDeleteUserWhenNotAuthenticated() {
-        Mockito.when(accountService.delete(eq("oidasajfdlihfaidh"))).thenReturn(Mono.just(account2));
+        Mockito.when(accountService.deleteAccount(eq("oidasajfdlihfaidh"))).thenReturn(Mono.just(account2));
          
         client
                 .delete().uri("/accounts/{id}", "oidasajfdlihfaidh")

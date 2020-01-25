@@ -46,18 +46,18 @@ public class PostRouterTest {
     @BeforeEach
     public void setUp() {
         this.account = utils.giveUser("oidasajfdlihfaidh", "Jukka Riekkonen", "jukka", "jukka");
-        this.blog = utils.giveBlog("Parsa blogi", account);
+        this.blog = utils.giveBlog("asdfuasdfhaosdifhasd", "Parsa blogi", account);
         this.post1 = utils.givePost("sdfjhasdfasd", "New blog", "This is my new blog", account, blog);
         this.post2 = utils.givePost("daufa9u0ouhfoauhdf", "To be or not to be", "That is the guestion", account, blog);
     }
     
     @Test
     @WithMockUser
-    public void canAddBlogToDatabase() {
-        Mockito.when(postService.save(any(Mono.class))).thenReturn(Mono.just(post1));
+    public void canAddPostToDatabase() {
+        Mockito.when(postService.savePost(any(Mono.class))).thenReturn(Mono.just(post1));
         
         client
-                .post().uri("/blogs")
+                .post().uri("/posts")
                 .body(Mono.just(post1), Post.class)
                 .exchange()
                 .expectStatus()
@@ -68,18 +68,18 @@ public class PostRouterTest {
                     .jsonPath("$.id").isEqualTo("sdfjhasdfasd")
                     .jsonPath("$.title").isEqualTo("New blog")
                     .jsonPath("$.content").isEqualTo("This is my new blog")
-                    .jsonPath("$.author.id").isEqualTo("oidasajfdlihfaidh")
-                    .jsonPath("$.author.name").isEqualTo("Jukka Riekkonen")
-                    .jsonPath("$.author.username").isEqualTo("jukka")
-                    .jsonPath("$.author.password").doesNotExist();   
+                    .jsonPath("$.created").exists()
+                    .jsonPath("$.blog.id").isEqualTo("asdfuasdfhaosdifhasd")
+                    .jsonPath("$.blog.name").isEqualTo("Parsa blogi")
+                    .jsonPath("$.blog.author.id").isEqualTo("oidasajfdlihfaidh");   
     }
     
     @Test
-    public void cannotAddBlogToDatabaseIfNotAuthorized() {
-        Mockito.when(postService.save(any(Mono.class))).thenReturn(Mono.just(post1));
+    public void cannotAddPostToDatabaseIfNotAuthorized() {
+        Mockito.when(postService.savePost(any(Mono.class))).thenReturn(Mono.just(post1));
         
         client
-                .post().uri("/blogs")
+                .post().uri("/posts")
                 .body(Mono.just(post1), Post.class)
                 .exchange()
                 .expectStatus()
@@ -89,11 +89,11 @@ public class PostRouterTest {
     }
     
     @Test
-    public void canGetBlogsFromDatabase() {
-        Mockito.when(postService.findAll()).thenReturn(Flux.just(post1, post2));
+    public void canGetPostsFromDatabase() {
+        Mockito.when(postService.findAllPosts()).thenReturn(Flux.just(post1, post2));
          
         client
-                .get().uri("/blogs")
+                .get().uri("/posts")
                 .accept(APPLICATION_JSON)
                 .exchange()
                 .expectStatus()

@@ -29,14 +29,7 @@ public class Post {
     
     @Indexed
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String author_id;
-    
-    @Transient
-    private Account author;
-    
-    @Indexed
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String blog_id;
+    private String blogId;
     
     @Transient
     private Blog blog;

@@ -43,7 +43,7 @@ public class PostHandler {
      * @return Status 200 response with all posts in body
      */
     public Mono<ServerResponse> listPosts(ServerRequest request) {
-        Flux<Post> posts = postService.findAll();
+        Flux<Post> posts = postService.findAllPosts();
         return ok().contentType(APPLICATION_JSON).body(posts, Post.class);
     }
     
@@ -58,7 +58,7 @@ public class PostHandler {
      */
     public Mono<ServerResponse> createPost(ServerRequest request) {
         Mono<Post> post = request.bodyToMono(Post.class).doOnNext(this::validate);
-        return postService.save(post).flatMap(b -> ok().contentType(APPLICATION_JSON).bodyValue(b));
+        return postService.savePost(post).flatMap(b -> ok().contentType(APPLICATION_JSON).bodyValue(b));
     }
     
     /**
@@ -70,7 +70,7 @@ public class PostHandler {
      * @return Status 200 response with requested blog in the body
      */
     public Mono<ServerResponse> getPost(ServerRequest request) {
-        return postService.findOne(request.pathVariable("id"))
+        return postService.findOnePost(request.pathVariable("id"))
                 .flatMap(p -> ok().contentType(APPLICATION_JSON).bodyValue(p))
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
@@ -86,7 +86,7 @@ public class PostHandler {
     public Mono<ServerResponse> updatePost(ServerRequest request) {
         Mono<Post> post = request.bodyToMono(Post.class);
         
-        return postService.update(post, request.pathVariable("id"))
+        return postService.updatePost(post, request.pathVariable("id"))
                 .flatMap(p -> status(201).contentType(APPLICATION_JSON).bodyValue(p));
     }
     
@@ -98,7 +98,7 @@ public class PostHandler {
      * @return Status 204 (no content) response
      */
     public Mono<ServerResponse> deletePost(ServerRequest request) {
-        return postService.delete(request.pathVariable("id"))
+        return postService.deletePost(request.pathVariable("id"))
                 .flatMap(p -> noContent().build());
     }
     

@@ -3,6 +3,7 @@ package bloogie.backend.service;
 
 import bloogie.backend.domain.Account;
 import bloogie.backend.domain.Blog;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -32,25 +33,49 @@ public class BlogService {
     private PostService postService;
     
     /**
-     * Fetch all Blogs from the database.
+     * Fetch Account that is author for given blog. Assigns
+     * that Account to Blog and return it.
      * 
-     * @return All blogs
+     * @param blog Blog to populate with Account
+     * @return Blog
      */
-    public Flux<Blog> findAll() {
-        return template.findAll(Blog.class);
+    private Mono<Blog> addAccountToBlog(Blog blog) {
+        return accountService.findOneAccount(blog.getAuthorId())
+                .zipWith(Mono.just(blog), (a, b) -> {
+                    b.setAuthor(a);
+                    return b;
+                });
     }
     
     /**
-     * Save Blog to database. This also saves blogs id to account
+     * Fetch all Blogs from the database. Populates blog
+     * with it's author
+     * 
+     * @return All blogs
+     */
+    public Flux<Blog> findAllBlogs() {
+        return template.findAll(Blog.class).flatMap(this::addAccountToBlog);
+    }
+    
+    /**
+     * Save Blog to database. This also saves blogs id to author
+     * and authors id to blog
      * 
      * @param blog Blog to save
      * @return Saved blog
      */
-    public Mono<Blog> save(Mono<Blog> blog) {
-        return template.save(blog).zipWith(accountService.getAuthenticatedUser(), (b, a) -> {
-            a.setBlog(b.getId());
+    public Mono<Blog> saveBlog(Mono<Blog> blog) {
+        Mono<Account> author = accountService.getAuthenticatedUser();
+        
+        return author.zipWith(blog, (a, b) -> {
+            b.setAuthorId(a.getId());
+            return b;
+            
+        }).flatMap(template::save).zipWith(author, (b, a) -> {
+            a.setBlogId(b.getId());
             template.save(a).subscribe();
             return b;
+            
         });
     }
     
@@ -60,7 +85,7 @@ public class BlogService {
      * @param id Blogs id
      * @return Found blog
      */
-    public Mono<Blog> findOne(String id) {
+    public Mono<Blog> findOneBlog(String id) {
         return template.findById(id, Blog.class);
     }
     
@@ -71,7 +96,7 @@ public class BlogService {
      * @param id Id of Blog to update
      * @return Updated Blog
      */
-    public Mono<Blog> update(Mono<Blog> newBlog, String id) {
+    public Mono<Blog> updateBlog(Mono<Blog> newBlog, String id) {
         return template.findById(id, Blog.class).zipWith(newBlog, (o, n) -> {
             o.setName((n.getName() == null) ? o.getName() : n.getName());
             return o;
@@ -85,12 +110,14 @@ public class BlogService {
      * @param id Blogs id to delete
      * @return Deleted blog
      */
-    public Mono<Blog> delete(String id) {
+    public Mono<Blog> deleteBlog(String id) {
         return template.findAndRemove(new Query(Criteria.where("id").is(id)), Blog.class);
     }
     
     /**
-     * Fetch all blogs which belongs to given user.
+     * Fetch all blogs which belongs to given user. There is no
+     * router for this method. This method is used for populating
+     * Account with blogs
      * 
      * @param account User whose blogs to fetch
      * @return Users blogs

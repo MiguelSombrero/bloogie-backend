@@ -26,26 +26,32 @@ public class PostService {
     private ReactiveMongoTemplate template;
  
     @Autowired
-    private AccountService accountService;
+    private BlogService blogService;
     
     /**
-     * Fetch all Posts from the database.
+     * Fetch Blog that is related to given Post. Assigns
+     * that blog to post and returns it.
      * 
-     * @return All posts
+     * @param post Post to populate with blog
+     * @return Post
      */
-    public Flux<Post> findAll() {
-        
-        // Ei VIELÄ HAE BLOGIA JOHON KYSEINEN POSTAUS LIITTYY
-        
-        return template.findAll(Post.class)
-                .flatMap(blog -> {
-                    return accountService.findOne(blog.getAuthor_id()).zipWith(Mono.just(blog), (a, b) -> {
-                        b.setAuthor(a);
-                        return b;
-                    });
+    private Mono<Post> addBlogToPost(Post post) {
+        return blogService.findOneBlog(post.getBlogId())
+                .zipWith(Mono.just(post), (b, p) -> {
+                    p.setBlog(b);
+                    return p;
                 });
     }
     
+    /**
+     * Fetch all Posts from the database. Populates each post with the
+     * blog it relates to
+     * 
+     * @return All posts
+     */
+    public Flux<Post> findAllPosts() {
+        return template.findAll(Post.class).flatMap(this::addBlogToPost);
+    }
     
     /**
      * Save POST to database. Before saving, method sets
@@ -56,12 +62,10 @@ public class PostService {
      * @param post Post to save
      * @return Saved post
      */
-    public Mono<Post> save(Mono<Post> post) {
-        return accountService.getAuthenticatedUser().zipWith(post, (a, b) -> {
-            b.setCreated(new Date());
-            b.setAuthor_id(a.getId());
-            b.setAuthor(a);
-            return b;
+    public Mono<Post> savePost(Mono<Post> post) {
+        return post.map(p -> {
+            p.setCreated(new Date());
+            return p;
             
         }).flatMap(template::save);
     }
@@ -72,7 +76,7 @@ public class PostService {
      * @param id id of post
      * @return Found post
      */
-    public Mono<Post> findOne(String id) {
+    public Mono<Post> findOnePost(String id) {
         return template.findById(id, Post.class);
     }
     
@@ -83,7 +87,7 @@ public class PostService {
      * @param id Id of Blog to update
      * @return Updated Blog
      */
-    public Mono<Post> update(Mono<Post> newPost, String id) {
+    public Mono<Post> updatePost(Mono<Post> newPost, String id) {
         return template.findById(id, Post.class).zipWith(newPost, (o, n) -> {
             o.setTitle((n.getTitle() == null) ? o.getTitle() : n.getTitle());
             o.setContent((n.getContent() == null) ? o.getContent() : n.getContent());
@@ -98,7 +102,7 @@ public class PostService {
      * @param id Posts id to delete
      * @return Deleted post
      */
-    public Mono<Post> delete(String id) {
+    public Mono<Post> deletePost(String id) {
         return template.findAndRemove(new Query(Criteria.where("id").is(id)), Post.class);
     }
 }
