@@ -36,14 +36,10 @@ public class AuthorizationHandlerFilterFunction implements HandlerFilterFunction
  
     @Override
     public Mono<ServerResponse> filter(ServerRequest sr, HandlerFunction<ServerResponse> hf) {
-        return ReactiveSecurityContextHolder.getContext()
-                .map(SecurityContext::getAuthentication)
-                .map(Authentication::getName)
-                
-                // miksi tässä kohdassa tulee null pointer
-               
-                .flatMap(username -> template.findOne(new Query(Criteria.where("username").is(username)), Account.class))
-                .switchIfEmpty(Mono.defer(() ->  Mono.error(new UsernameNotFoundException("Username not found"))))
+        
+        // miksi heittää null pointeria??
+        
+        return accountService.getAuthenticatedUser()
                 .filter(account -> !account.getId().equalsIgnoreCase(sr.pathVariable("id")))
                 .flatMap(account -> hf.handle(sr))
                 .switchIfEmpty(Mono.defer(() -> ServerResponse.status(FORBIDDEN).build()));

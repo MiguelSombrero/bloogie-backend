@@ -2,10 +2,12 @@
 package bloogie.backend.handler;
 
 import bloogie.backend.domain.Account;
+import bloogie.backend.domain.Views;
 import bloogie.backend.service.AccountService;
 import bloogie.backend.validator.AccountValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import org.springframework.http.codec.json.Jackson2CodecSupport;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -44,7 +46,9 @@ public class AccountHandler {
      */
     public Mono<ServerResponse> listAccounts(ServerRequest request) {
         Flux<Account> accounts = accountService.findAllAccounts();
-        return ok().contentType(APPLICATION_JSON).body(accounts, Account.class);
+        return ok().contentType(APPLICATION_JSON)
+                .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Account.class)
+                .body(accounts, Account.class);
     }
     
     /**
@@ -71,7 +75,9 @@ public class AccountHandler {
      */
     public Mono<ServerResponse> getAccount(ServerRequest request) {
         return accountService.findOneAccount(request.pathVariable("id"))
-                .flatMap(account -> ok().contentType(APPLICATION_JSON).bodyValue(account))
+                .flatMap(account -> ok().contentType(APPLICATION_JSON)
+                .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Account.class)
+                .bodyValue(account))
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
     
@@ -87,7 +93,9 @@ public class AccountHandler {
         Mono<Account> account = request.bodyToMono(Account.class);
         
         return accountService.updateAccount(account, request.pathVariable("id"))
-                .flatMap(a -> status(201).contentType(APPLICATION_JSON).bodyValue(a));
+                .flatMap(a -> status(201).contentType(APPLICATION_JSON)
+                .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Account.class)
+                .bodyValue(a));
     }
     
     /**

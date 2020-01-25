@@ -2,8 +2,6 @@
 package bloogie.backend.service;
 
 import bloogie.backend.domain.Account;
-import bloogie.backend.domain.Blog;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -86,12 +84,15 @@ public class AccountService {
      * @return Updated account
      */
     public Mono<Account> updateAccount(Mono<Account> newAccount, String id) {
-        return template.findById(id, Account.class).zipWith(newAccount, (o, n) -> {
-            o.setPassword((n.getPassword() == null) ? o.getPassword() : encoder.encode(n.getPassword()));
-            o.setName((n.getName() == null) ? o.getName() : n.getName());
-            return o;
+        return template.findById(id, Account.class)
+                .zipWith(newAccount, (o, n) -> {
+                    o.setPassword((n.getPassword() == null) ? o.getPassword() : encoder.encode(n.getPassword()));
+                    o.setName((n.getName() == null) ? o.getName() : n.getName());
+                    return o;
             
-        }).flatMap(template::save);
+                })
+                .flatMap(template::save)
+                .flatMap(this::addBlogsToAccount);
     }
     
     /**

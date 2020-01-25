@@ -3,16 +3,17 @@ package bloogie.backend.router;
 
 import bloogie.backend.domain.Account;
 import bloogie.backend.service.AccountService;
+import bloogie.backend.service.CustomReactiveUserDetailsService;
 import bloogie.backend.utils.TestUtils;
 import org.junit.jupiter.api.Test;
 import static org.junit.Assert.*;
 import org.junit.jupiter.api.BeforeEach;
+import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.ApplicationContext;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -39,6 +40,9 @@ public class LoginRouterTest {
     @MockBean
     private AccountService accountService;
     
+    //@MockBean
+    //private CustomReactiveUserDetailsService userDetailsService;
+    
     private Account account;
     
     @BeforeEach
@@ -49,7 +53,7 @@ public class LoginRouterTest {
     @Test
     public void loginFailsWithBadCredentials() {
         Mockito.when(accountService.getAuthenticatedUser()).thenReturn(Mono.just(account));
-        
+                
         client
                 .post().uri("/login")
                 .header("Authorization", "Basic " + utils.createAuthenticationToken("justiina", "juuso"))
@@ -63,6 +67,7 @@ public class LoginRouterTest {
     @Test
     public void loginSuccessWithGoodCredentials() {
         Mockito.when(accountService.getAuthenticatedUser()).thenReturn(Mono.just(account));
+        //Mockito.when(userDetailsService.findByUsername(eq("jukka"))).thenReturn(Mono.just(account.toUserDetails()));
         
         client
                 .post().uri("/login")

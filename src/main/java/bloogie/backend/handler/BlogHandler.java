@@ -2,10 +2,12 @@
 package bloogie.backend.handler;
 
 import bloogie.backend.domain.Blog;
+import bloogie.backend.domain.Views;
 import bloogie.backend.service.BlogService;
 import bloogie.backend.validator.BlogValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import org.springframework.http.codec.json.Jackson2CodecSupport;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -44,7 +46,9 @@ public class BlogHandler {
      */
     public Mono<ServerResponse> listBlogs(ServerRequest request) {
         Flux<Blog> blogs = blogService.findAllBlogs();
-        return ok().contentType(APPLICATION_JSON).body(blogs, Blog.class);
+        return ok().contentType(APPLICATION_JSON)
+                .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Blog.class)
+                .body(blogs, Blog.class);
     }
     
     /**
@@ -58,7 +62,10 @@ public class BlogHandler {
      */
     public Mono<ServerResponse> createBlog(ServerRequest request) {
         Mono<Blog> blog = request.bodyToMono(Blog.class).doOnNext(this::validate);
-        return blogService.saveBlog(blog).flatMap(b -> ok().contentType(APPLICATION_JSON).bodyValue(b));
+        
+        return blogService.saveBlog(blog).flatMap(b -> ok().contentType(APPLICATION_JSON)
+                .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Blog.class)
+                .bodyValue(b));
     }
     
     /**
@@ -71,8 +78,10 @@ public class BlogHandler {
      */
     public Mono<ServerResponse> getBlog(ServerRequest request) {
         return blogService.findOneBlog(request.pathVariable("id"))
-                .flatMap(blog -> ok().contentType(APPLICATION_JSON).bodyValue(blog))
-                .switchIfEmpty(ServerResponse.notFound().build());
+                .flatMap(blog -> ok().contentType(APPLICATION_JSON)
+                        .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Blog.class)
+                        .bodyValue(blog))
+                        .switchIfEmpty(ServerResponse.notFound().build());
     }
     
     /**
@@ -87,7 +96,9 @@ public class BlogHandler {
         Mono<Blog> blog = request.bodyToMono(Blog.class);
         
         return blogService.updateBlog(blog, request.pathVariable("id"))
-                .flatMap(b -> status(201).contentType(APPLICATION_JSON).bodyValue(b));
+                .flatMap(b -> status(201).contentType(APPLICATION_JSON)
+                        .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Blog.class)
+                        .bodyValue(b));
     }
     
     /**

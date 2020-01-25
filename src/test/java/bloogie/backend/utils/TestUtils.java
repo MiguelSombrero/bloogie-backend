@@ -35,6 +35,7 @@ public class TestUtils {
         Blog b = new Blog();
         b.setId(id);
         b.setName(name);
+        b.setAuthor(author);
         return b;
     }
     
@@ -45,6 +46,7 @@ public class TestUtils {
         p.setContent(content);
         p.setCreated(new Date());
         p.setBlog(blog);
+        p.setAuthor(author);
         return p;
     }
 }

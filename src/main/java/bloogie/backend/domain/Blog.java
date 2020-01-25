@@ -2,6 +2,7 @@
 package bloogie.backend.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,13 +20,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data @NoArgsConstructor @AllArgsConstructor
 @Document(collection = "blogs")
 public class Blog {
+    
     @Id
+    @JsonView({ Views.Blog.class, Views.Account.class, Views.Post.class })
     private String id;
+    
+    @JsonView({ Views.Account.class, Views.Blog.class, Views.Post.class })
     private String name;
     
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String authorId;
     
     @Transient
+    @JsonView(Views.Blog.class)
     private Account author;
 }

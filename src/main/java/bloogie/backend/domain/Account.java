@@ -3,6 +3,7 @@ package bloogie.backend.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.annotation.JsonView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,26 +29,25 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Data @AllArgsConstructor @NoArgsConstructor
 @Document(collection = "accounts")
 public class Account {
+    
     @Id
+    @JsonView({ Views.Account.class, Views.Blog.class, Views.Post.class })
     private String id;
+    
+    @JsonView({ Views.Account.class, Views.Blog.class, Views.Post.class })
     private String name;
     
     @Indexed(unique = true)
+    @JsonView({ Views.Account.class, Views.Blog.class, Views.Post.class })
     private String username;
     
-    @JsonProperty(access = Access.WRITE_ONLY)
-    private String password;
-    
-    @JsonProperty(access = Access.WRITE_ONLY)
-    private List<String> authorities = new ArrayList<>();
-    
-    @Indexed
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private List<String> blogIds = new ArrayList<>();
-    
     @Transient
+    @JsonView(Views.Account.class)
     private List<Blog> blogs = new ArrayList<>();
     
+    private String password;
+    private List<String> authorities = new ArrayList<>();
+    private List<String> blogIds = new ArrayList<>();
     
     public void setBlogId(String id) {
         this.blogIds.add(id);

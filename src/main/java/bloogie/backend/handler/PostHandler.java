@@ -2,10 +2,12 @@
 package bloogie.backend.handler;
 
 import bloogie.backend.domain.Post;
+import bloogie.backend.domain.Views;
 import bloogie.backend.service.PostService;
 import bloogie.backend.validator.PostValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import org.springframework.http.codec.json.Jackson2CodecSupport;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -44,7 +46,9 @@ public class PostHandler {
      */
     public Mono<ServerResponse> listPosts(ServerRequest request) {
         Flux<Post> posts = postService.findAllPosts();
-        return ok().contentType(APPLICATION_JSON).body(posts, Post.class);
+        return ok().contentType(APPLICATION_JSON)
+                .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Post.class)
+                .body(posts, Post.class);
     }
     
     /**
@@ -58,7 +62,11 @@ public class PostHandler {
      */
     public Mono<ServerResponse> createPost(ServerRequest request) {
         Mono<Post> post = request.bodyToMono(Post.class).doOnNext(this::validate);
-        return postService.savePost(post).flatMap(b -> ok().contentType(APPLICATION_JSON).bodyValue(b));
+        
+        return postService.savePost(post)
+                .flatMap(b -> ok().contentType(APPLICATION_JSON)
+                        .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Post.class)
+                        .bodyValue(b));
     }
     
     /**
@@ -71,7 +79,9 @@ public class PostHandler {
      */
     public Mono<ServerResponse> getPost(ServerRequest request) {
         return postService.findOnePost(request.pathVariable("id"))
-                .flatMap(p -> ok().contentType(APPLICATION_JSON).bodyValue(p))
+                .flatMap(p -> ok().contentType(APPLICATION_JSON)
+                        .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Post.class)
+                        .bodyValue(p))
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
     
@@ -87,7 +97,9 @@ public class PostHandler {
         Mono<Post> post = request.bodyToMono(Post.class);
         
         return postService.updatePost(post, request.pathVariable("id"))
-                .flatMap(p -> status(201).contentType(APPLICATION_JSON).bodyValue(p));
+                .flatMap(p -> status(201).contentType(APPLICATION_JSON)
+                        .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Post.class)
+                        .bodyValue(p));
     }
     
     /**

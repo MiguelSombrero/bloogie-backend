@@ -28,6 +28,24 @@ public class PostService {
     @Autowired
     private BlogService blogService;
     
+    @Autowired
+    private AccountService accountService;
+    
+    /**
+     * Fetch Account that is related to given Post. Assigns
+     * that account to post and returns it.
+     * 
+     * @param post Post to populate with account
+     * @return Post
+     */
+    private Mono<Post> addAccountToPost(Post post) {
+        return accountService.findOneAccount(post.getAuthorId())
+                .zipWith(Mono.just(post), (a, p) -> {
+                    p.setAuthor(a);
+                    return p;
+                });
+    }
+    
     /**
      * Fetch Blog that is related to given Post. Assigns
      * that blog to post and returns it.
@@ -50,7 +68,9 @@ public class PostService {
      * @return All posts
      */
     public Flux<Post> findAllPosts() {
-        return template.findAll(Post.class).flatMap(this::addBlogToPost);
+        return template.findAll(Post.class)
+                .flatMap(this::addBlogToPost)
+                .flatMap(this::addAccountToPost);
     }
     
     /**
@@ -63,11 +83,16 @@ public class PostService {
      * @return Saved post
      */
     public Mono<Post> savePost(Mono<Post> post) {
-        return post.map(p -> {
-            p.setCreated(new Date());
-            return p;
+        return accountService.getAuthenticatedUser()
+                .zipWith(post, (a, p) -> {
+                    p.setCreated(new Date());
+                    p.setAuthorId(a.getId());
+                    return p;
             
-        }).flatMap(template::save);
+                })
+                .flatMap(template::save)
+                .flatMap(this::addBlogToPost)
+                .flatMap(this::addAccountToPost);
     }
     
     /**
@@ -88,12 +113,16 @@ public class PostService {
      * @return Updated Blog
      */
     public Mono<Post> updatePost(Mono<Post> newPost, String id) {
-        return template.findById(id, Post.class).zipWith(newPost, (o, n) -> {
-            o.setTitle((n.getTitle() == null) ? o.getTitle() : n.getTitle());
-            o.setContent((n.getContent() == null) ? o.getContent() : n.getContent());
-            return o;
+        return template.findById(id, Post.class)
+                .zipWith(newPost, (o, n) -> {
+                    o.setTitle((n.getTitle() == null) ? o.getTitle() : n.getTitle());
+                    o.setContent((n.getContent() == null) ? o.getContent() : n.getContent());
+                    return o;
             
-        }).flatMap(template::save);
+                })
+                .flatMap(template::save)
+                .flatMap(this::addBlogToPost)
+                .flatMap(this::addAccountToPost);
     }
     
     /**

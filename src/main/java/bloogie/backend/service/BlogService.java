@@ -3,7 +3,6 @@ package bloogie.backend.service;
 
 import bloogie.backend.domain.Account;
 import bloogie.backend.domain.Blog;
-import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -76,7 +75,7 @@ public class BlogService {
             template.save(a).subscribe();
             return b;
             
-        });
+        }).flatMap(this::addAccountToBlog);
     }
     
     /**
@@ -97,11 +96,14 @@ public class BlogService {
      * @return Updated Blog
      */
     public Mono<Blog> updateBlog(Mono<Blog> newBlog, String id) {
-        return template.findById(id, Blog.class).zipWith(newBlog, (o, n) -> {
-            o.setName((n.getName() == null) ? o.getName() : n.getName());
-            return o;
+        return template.findById(id, Blog.class)
+                .zipWith(newBlog, (o, n) -> {
+                    o.setName((n.getName() == null) ? o.getName() : n.getName());
+                    return o;
             
-        }).flatMap(template::save);
+                })
+                .flatMap(template::save)
+                .flatMap(this::addAccountToBlog);
     }
     
     /**

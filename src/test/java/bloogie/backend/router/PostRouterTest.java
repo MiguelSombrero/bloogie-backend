@@ -53,7 +53,7 @@ public class PostRouterTest {
     
     @Test
     @WithMockUser
-    public void canAddPostToDatabase() {
+    public void canAddPostToDatabaseWhenAuthorized() {
         Mockito.when(postService.savePost(any(Mono.class))).thenReturn(Mono.just(post1));
         
         client
@@ -71,7 +71,9 @@ public class PostRouterTest {
                     .jsonPath("$.created").exists()
                     .jsonPath("$.blog.id").isEqualTo("asdfuasdfhaosdifhasd")
                     .jsonPath("$.blog.name").isEqualTo("Parsa blogi")
-                    .jsonPath("$.blog.author.id").isEqualTo("oidasajfdlihfaidh");   
+                    .jsonPath("$.author.id").isEqualTo("oidasajfdlihfaidh")
+                    .jsonPath("$.author.name").isEqualTo("Jukka Riekkonen")
+                    .jsonPath("$.author.username").isEqualTo("jukka");   
     }
     
     @Test
