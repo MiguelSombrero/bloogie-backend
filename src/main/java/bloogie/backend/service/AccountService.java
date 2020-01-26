@@ -84,7 +84,7 @@ public class AccountService {
      * @return Updated account
      */
     public Mono<Account> updateAccount(Mono<Account> newAccount, String id) {
-        return template.findById(id, Account.class)
+      return template.findById(id, Account.class)
                 .zipWith(newAccount, (o, n) -> {
                     o.setPassword((n.getPassword() == null) ? o.getPassword() : encoder.encode(n.getPassword()));
                     o.setName((n.getName() == null) ? o.getName() : n.getName());

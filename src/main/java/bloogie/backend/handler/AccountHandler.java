@@ -28,7 +28,7 @@ import reactor.core.publisher.Mono;
  */
 
 @Component
-public class AccountHandler {
+public class AccountHandler implements ResourceHandler {
     
     @Autowired
     private AccountValidator validator;
@@ -44,7 +44,8 @@ public class AccountHandler {
      * @param request Request received from the client
      * @return Status 200 response with all in the accounts body
      */
-    public Mono<ServerResponse> listAccounts(ServerRequest request) {
+    @Override
+    public Mono<ServerResponse> list(ServerRequest request) {
         Flux<Account> accounts = accountService.findAllAccounts();
         return ok().contentType(APPLICATION_JSON)
                 .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Account.class)
@@ -60,7 +61,8 @@ public class AccountHandler {
      * @param request Request received from the client
      * @return Status 200 response without a body
      */
-    public Mono<ServerResponse> createAccount(ServerRequest request) {
+    @Override
+    public Mono<ServerResponse> create(ServerRequest request) {
         Mono<Account> account = request.bodyToMono(Account.class).doOnNext(this::validate);
         return accountService.saveAccount(account).flatMap(a -> ok().build());
     }
@@ -73,11 +75,12 @@ public class AccountHandler {
      * @param request Request received from the client
      * @return Status 200 response with requested account in the body
      */
-    public Mono<ServerResponse> getAccount(ServerRequest request) {
+    @Override
+    public Mono<ServerResponse> getOne(ServerRequest request) {
         return accountService.findOneAccount(request.pathVariable("id"))
                 .flatMap(account -> ok().contentType(APPLICATION_JSON)
-                .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Account.class)
-                .bodyValue(account))
+                        .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Account.class)
+                        .bodyValue(account))
                 .switchIfEmpty(ServerResponse.notFound().build());
     }
     
@@ -89,13 +92,14 @@ public class AccountHandler {
      * @param request Request received from the client
      * @return Status 201 (created) response with updated account in the body
      */
-    public Mono<ServerResponse> updateAccount(ServerRequest request) {
+    @Override
+    public Mono<ServerResponse> update(ServerRequest request) {
         Mono<Account> account = request.bodyToMono(Account.class);
         
         return accountService.updateAccount(account, request.pathVariable("id"))
                 .flatMap(a -> status(201).contentType(APPLICATION_JSON)
-                .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Account.class)
-                .bodyValue(a));
+                        .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Account.class)
+                        .bodyValue(a));
     }
     
     /**
@@ -105,7 +109,8 @@ public class AccountHandler {
      * @param request Request received from the client
      * @return Status 204 (no content) response
      */
-    public Mono<ServerResponse> deleteAccount(ServerRequest request) {
+    @Override
+    public Mono<ServerResponse> delete(ServerRequest request) {
         return accountService.deleteAccount(request.pathVariable("id"))
                 .flatMap(a -> noContent().build());
     }

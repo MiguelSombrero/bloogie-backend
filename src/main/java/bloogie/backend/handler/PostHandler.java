@@ -28,7 +28,7 @@ import reactor.core.publisher.Mono;
  */
 
 @Component
-public class PostHandler {
+public class PostHandler implements ResourceHandler {
     
     @Autowired
     private PostValidator validator;
@@ -44,7 +44,8 @@ public class PostHandler {
      * @param request Request received from the client
      * @return Status 200 response with all posts in body
      */
-    public Mono<ServerResponse> listPosts(ServerRequest request) {
+    @Override
+    public Mono<ServerResponse> list(ServerRequest request) {
         Flux<Post> posts = postService.findAllPosts();
         return ok().contentType(APPLICATION_JSON)
                 .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Post.class)
@@ -60,7 +61,8 @@ public class PostHandler {
      * @param request Request received from the client
      * @return Status 200 response with created post in the body
      */
-    public Mono<ServerResponse> createPost(ServerRequest request) {
+    @Override
+    public Mono<ServerResponse> create(ServerRequest request) {
         Mono<Post> post = request.bodyToMono(Post.class).doOnNext(this::validate);
         
         return postService.savePost(post)
@@ -77,7 +79,8 @@ public class PostHandler {
      * @param request Request received from the client
      * @return Status 200 response with requested blog in the body
      */
-    public Mono<ServerResponse> getPost(ServerRequest request) {
+    @Override
+    public Mono<ServerResponse> getOne(ServerRequest request) {
         return postService.findOnePost(request.pathVariable("id"))
                 .flatMap(p -> ok().contentType(APPLICATION_JSON)
                         .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Post.class)
@@ -93,7 +96,8 @@ public class PostHandler {
      * @param request Request received from the client
      * @return Status 201 (created) response with updated post in the body
      */
-    public Mono<ServerResponse> updatePost(ServerRequest request) {
+    @Override
+    public Mono<ServerResponse> update(ServerRequest request) {
         Mono<Post> post = request.bodyToMono(Post.class);
         
         return postService.updatePost(post, request.pathVariable("id"))
@@ -109,7 +113,8 @@ public class PostHandler {
      * @param request Request received from the client
      * @return Status 204 (no content) response
      */
-    public Mono<ServerResponse> deletePost(ServerRequest request) {
+    @Override
+    public Mono<ServerResponse> delete(ServerRequest request) {
         return postService.deletePost(request.pathVariable("id"))
                 .flatMap(p -> noContent().build());
     }

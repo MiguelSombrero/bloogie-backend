@@ -28,7 +28,7 @@ import reactor.core.publisher.Mono;
  */
 
 @Component
-public class BlogHandler {
+public class BlogHandler implements ResourceHandler {
     
     @Autowired
     private BlogValidator validator;
@@ -44,7 +44,8 @@ public class BlogHandler {
      * @param request Request received from the client
      * @return Status 200 response with all blogs in body
      */
-    public Mono<ServerResponse> listBlogs(ServerRequest request) {
+    @Override
+    public Mono<ServerResponse> list(ServerRequest request) {
         Flux<Blog> blogs = blogService.findAllBlogs();
         return ok().contentType(APPLICATION_JSON)
                 .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Blog.class)
@@ -60,7 +61,8 @@ public class BlogHandler {
      * @param request Request received from the client
      * @return Status 200 response with created blog in the body
      */
-    public Mono<ServerResponse> createBlog(ServerRequest request) {
+    @Override
+    public Mono<ServerResponse> create(ServerRequest request) {
         Mono<Blog> blog = request.bodyToMono(Blog.class).doOnNext(this::validate);
         
         return blogService.saveBlog(blog).flatMap(b -> ok().contentType(APPLICATION_JSON)
@@ -76,7 +78,8 @@ public class BlogHandler {
      * @param request Request received from the client
      * @return Status 200 response with requested blog in the body
      */
-    public Mono<ServerResponse> getBlog(ServerRequest request) {
+    @Override
+    public Mono<ServerResponse> getOne(ServerRequest request) {
         return blogService.findOneBlog(request.pathVariable("id"))
                 .flatMap(blog -> ok().contentType(APPLICATION_JSON)
                         .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Blog.class)
@@ -92,7 +95,8 @@ public class BlogHandler {
      * @param request Request received from the client
      * @return Status 201 (created) response with updated blog in the body
      */
-    public Mono<ServerResponse> updateBlog(ServerRequest request) {
+    @Override
+    public Mono<ServerResponse> update(ServerRequest request) {
         Mono<Blog> blog = request.bodyToMono(Blog.class);
         
         return blogService.updateBlog(blog, request.pathVariable("id"))
@@ -108,7 +112,8 @@ public class BlogHandler {
      * @param request Request received from the client
      * @return Status 204 (no content) response
      */
-    public Mono<ServerResponse> deleteBlog(ServerRequest request) {
+    @Override
+    public Mono<ServerResponse> delete(ServerRequest request) {
         return blogService.deleteBlog(request.pathVariable("id"))
                 .flatMap(b -> noContent().build());
     }

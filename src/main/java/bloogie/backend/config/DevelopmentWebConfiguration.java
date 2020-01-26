@@ -6,6 +6,7 @@ import bloogie.backend.handler.AuthorizationHandlerFilterFunction;
 import bloogie.backend.handler.BlogHandler;
 import bloogie.backend.handler.PostHandler;
 import bloogie.backend.handler.LoginHandler;
+import bloogie.backend.handler.ResourceHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,61 +59,54 @@ public class DevelopmentWebConfiguration implements WebFluxConfigurer {
     }
     
     /**
-     * Functional endpoint for Account resource. Base path is /account and
-     * the options are to GET one account, GET all accounts, PUT updated account,
-     * POST a new account or DELETE account.
+     * General functional endpoint for domain objects. Options are to
+     * GET one resource, GET all resources, PUT updated resource,
+     * POST a new resource or DELETE resource.
      * 
-     * @return Router function with response to Account request
+     * @param basePath Basepath for this resource
+     * @param handler Handler for this resource
+     * @return Router function for given resource
+     */
+    private static RouterFunction<ServerResponse> resourceRouter(String basePath, ResourceHandler handler) {
+        return route().path(basePath, b1 -> b1
+                .nest(path("/{id}"), b2 -> b2
+                    .GET("", accept(APPLICATION_JSON), handler::getOne)
+                    .PUT("", accept(APPLICATION_JSON), handler::update)
+                    .DELETE("", handler::delete))
+                    //.filter(new AuthorizationHandlerFilterFunction()))
+                .GET("", accept(APPLICATION_JSON), handler::list)
+                .POST("", handler::create))
+                .build();
+    }
+    
+    /**
+     * Functional endpoint for Account resource. Base path is /accounts.
+     * 
+     * @return Router function listening requests for Account resource
      */
     @Bean
     public RouterFunction<ServerResponse> accountRouter() {
-        return route().path("/accounts", b1 -> b1
-                .nest(path("/{id}"), b2 -> b2
-                    .GET("", accept(APPLICATION_JSON), accountHandler::getAccount)
-                    .PUT("", accept(APPLICATION_JSON), accountHandler::updateAccount)
-                    .DELETE("", accountHandler::deleteAccount))
-                .GET("", accept(APPLICATION_JSON), accountHandler::listAccounts)
-                .POST("", accountHandler::createAccount))
-                .build();
+        return resourceRouter("/accounts", accountHandler);
     }
     
     /**
-     * Functional endpoint for Post resource. Base path is /post and
-     * the options are GET all posts, GET one post, PUT updated post, DELETE post
-     * or POST a new post.
+     * Functional endpoint for Post resource. Base path is /posts.
      * 
-     * @return Router function with response to Post request
+     * @return Router function listening requests for Post resource
      */
     @Bean
     public RouterFunction<ServerResponse> postRouter() {
-        return route().path("/posts", b1 -> b1
-                .nest(path("/{id}"), b2 -> b2
-                    .GET("", accept(APPLICATION_JSON), postHandler::getPost)
-                    .PUT("", accept(APPLICATION_JSON), postHandler::updatePost)
-                    .DELETE("", postHandler::deletePost))
-                .GET("", accept(APPLICATION_JSON), postHandler::listPosts)
-                .POST("", postHandler::createPost))
-                .build();
+        return resourceRouter("/posts", postHandler);
     }
     
     /**
-     * Functional endpoint for Blog resource. Base path is /blog and
-     * the options are GET all blogs, GET one blog, PUT updated blog, DELETE blog
-     * or POST a new blog.
+     * Functional endpoint for Blog resource. Base path is /blogs.
      * 
-     * @return Router function with response to Blog request
+     * @return Router function listening requests for Blog resource
      */
     @Bean
     public RouterFunction<ServerResponse> blogRouter() {
-        return route().path("/blogs", b1 -> b1
-                .nest(path("/{id}"), b2 -> b2
-                    .GET("", accept(APPLICATION_JSON), blogHandler::getBlog)
-                    .PUT("", accept(APPLICATION_JSON), blogHandler::updateBlog)
-                    .DELETE("", blogHandler::deleteBlog))
-                    //.filter(new AuthorizationHandlerFilterFunction()))
-                .GET("", accept(APPLICATION_JSON), blogHandler::listBlogs)
-                .POST("", blogHandler::createBlog))
-                .build();
+        return resourceRouter("/blogs", blogHandler);
     }
     
     /**
