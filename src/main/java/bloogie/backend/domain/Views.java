@@ -2,7 +2,8 @@
 package bloogie.backend.domain;
 
 /**
- *
+ * Jackson JSON Views for serializing domain objects.
+ * 
  * @author miika
  */
 public class Views {

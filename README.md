@@ -1,6 +1,6 @@
 # Bloogie backend
 
-This is my personal project for practicing reactive web development. Bloogie backend is reactive RESTfull web service implemented with Java 8 and Spring Webflux. It serves `Account`, `Blog` and `Post` resources from following functional endpoints:
+This is my personal project for practicing reactive backend web development. Bloogie backend is reactive RESTfull web service implemented with Java 8 and Spring Webflux. It serves `Account`, `Blog` and `Post` resources from following functional endpoints:
 
     POST /login - authenticate with Basic authentication
 
@@ -10,27 +10,27 @@ This is my personal project for practicing reactive web development. Bloogie bac
     GET /{basePath} - fetch all resources
     POST /{basePath} - create new resource
 
-Here the *{basePath}* is determined by resource as follows:
+The *{basePath}* is determined by resource as follows:
 
     /accounts - for Account resources
     /blogs - for Blog resources
     /posts - for Post resource
 
+Domain objects are defined in path *src/main/java/bloogie/backend/domain*.
+
 ## Implementation
 
-Application is implemented with Java 8 and Spring framework (Spring Boot, Spring WebFlux, Spring Security and Spring Data MongoDB).
+Application is implemented with Java 8 and Spring framework (Spring Boot, Spring WebFlux, Spring Security and Spring Data MongoDB). It uses reactive mongo repositories, which can be configured in `ReactiveMongoConfiguration` class and in application.properties file. With current settings application uses local mongo database.
 
-### Authentication
+API endpoints authenticate with Basic authentication. Requests to protected endpoints should have authorization header (`Authorization: {base64token}`) matching existing user. Security settings can be configured in `DevelopmentSecurityConfiguration` class.
 
-Authentication is achieved with Spring Security and Basic authentication. Requests to protected endpoints should have authorization header (`Authorization: base64token`) matching existing user. Security settings can be configured in `DevelopmentSecurityConfiguration` class.
-
-### Persistence of data
-
-Application uses reactive mongo repositories, which can be configured via `ReactiveMongoConfiguration` class and application-{profile}.properties file. With current settings application uses local mongo database.
+Jackson JSON Views is used for serializing the domain objects to server response (removing password from Account domain object etc).
 
 ## System requirements
 
-Application requires Java 8+. It also requires local mongoDB installation OR you have to define remote mongoDB service in application-{profile}.properties file. Maven is required for managing and building the project.
+- Java 8+
+- Maven
+- Local MongoDB (or define remote mongoDB in application.properties file)
 
 ## Installation
 
@@ -54,6 +54,10 @@ Run executable jar-file
 
 ## Todo
 
-- Unit tests covers now only router functions. No integration tests are implemented
-- Validations object could be more comprehensive
-- With real-life blog service, it would be nice to have more interaction. At least `Comment` and `Like` model objects would be nice
+List of things to do in some distant future:
+
+- More tests; tests covers only router and handler functions
+- Expanding domain to have more interaction (Comments, Likes, Pictures ...)
+- Better validations for domain objects
+- Authorization for PUT and DELETE endpoints, allowing handle only resources you own
+- Security settings; cors policies, csrf security, https etc.

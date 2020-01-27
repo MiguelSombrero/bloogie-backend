@@ -8,7 +8,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 /**
- * Class for validating Blog objects. Note that these validation
+ * Class for validating Post objects. Note that these validation
  * constraints ARE NOT sufficient for production environment.
  * 
  * @author miika
@@ -23,7 +23,7 @@ public class PostValidator implements Validator {
     }
 
     /**
-     * Validates given Blog. Title must be within 1-50 characters and
+     * Validates given Post. Title must be within 1-50 characters and
      * content within 5-5000 characters. Also white space is no allowed.
      * 
      * @param o Object to validate

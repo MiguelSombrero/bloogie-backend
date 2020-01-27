@@ -3,12 +3,9 @@ package bloogie.backend.router;
 
 import bloogie.backend.domain.Account;
 import bloogie.backend.service.AccountService;
-import bloogie.backend.service.CustomReactiveUserDetailsService;
 import bloogie.backend.utils.TestUtils;
 import org.junit.jupiter.api.Test;
-import static org.junit.Assert.*;
 import org.junit.jupiter.api.BeforeEach;
-import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -39,9 +36,6 @@ public class LoginRouterTest {
     
     @MockBean
     private AccountService accountService;
-    
-    //@MockBean
-    //private CustomReactiveUserDetailsService userDetailsService;
     
     private Account account;
     

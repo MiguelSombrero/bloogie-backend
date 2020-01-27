@@ -84,7 +84,7 @@ public class BlogHandler implements ResourceHandler {
                 .flatMap(blog -> ok().contentType(APPLICATION_JSON)
                         .hint(Jackson2CodecSupport.JSON_VIEW_HINT, Views.Blog.class)
                         .bodyValue(blog))
-                        .switchIfEmpty(ServerResponse.notFound().build());
+                .switchIfEmpty(ServerResponse.notFound().build());
     }
     
     /**

@@ -2,7 +2,6 @@
 package bloogie.backend.config;
 
 import bloogie.backend.handler.AccountHandler;
-import bloogie.backend.handler.AuthorizationHandlerFilterFunction;
 import bloogie.backend.handler.BlogHandler;
 import bloogie.backend.handler.PostHandler;
 import bloogie.backend.handler.LoginHandler;
@@ -73,7 +72,6 @@ public class DevelopmentWebConfiguration implements WebFluxConfigurer {
                     .GET("", accept(APPLICATION_JSON), handler::getOne)
                     .PUT("", accept(APPLICATION_JSON), handler::update)
                     .DELETE("", handler::delete))
-                    //.filter(new AuthorizationHandlerFilterFunction()))
                 .GET("", accept(APPLICATION_JSON), handler::list)
                 .POST("", handler::create))
                 .build();

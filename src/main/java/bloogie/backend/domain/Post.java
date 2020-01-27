@@ -1,7 +1,6 @@
 
 package bloogie.backend.domain;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import java.util.Date;
 import lombok.AllArgsConstructor;

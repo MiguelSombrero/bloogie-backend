@@ -6,7 +6,6 @@ import bloogie.backend.domain.Blog;
 import bloogie.backend.domain.Post;
 import bloogie.backend.service.BlogService;
 import bloogie.backend.utils.TestUtils;
-import static org.junit.Assert.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;

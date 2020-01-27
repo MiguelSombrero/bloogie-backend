@@ -22,7 +22,8 @@ public class BlogValidator implements Validator {
     }
 
     /**
-     * Validates given Blog. Blogs name must be within 5-100 characters. Also white space is no allowed.
+     * Validates given Blog. Blogs name must be
+     * within 5-100 characters. Also white space is no allowed.
      * 
      * @param o Object to validate
      * @param errors Validation errors
